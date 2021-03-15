@@ -4,8 +4,19 @@
 <head>
 
 
-    <title>htmlchess</title>
 
+
+    <meta charset="UTF-8">
+    <meta name="description" content="An html file that can beat you at chess">
+    <meta name="keywords" content="Chess, HTML, JavaScript, Stockfish">
+    <meta name="author" content="David Ryan">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+
+
+    <title>htmlchess</title>
 
     <!-- load libraries-->
 
@@ -30,7 +41,7 @@
         }
 
         .board-b72b1 {
-            border: 2px solid #404040;
+            border: 10px solid #404040;
             box-sizing: content-box
         }
 
@@ -86,7 +97,7 @@
         }
 
         #myBoard {
-            width: 500px;
+            width: 400px;
             margin: auto;
         }
     </style>
@@ -118,7 +129,7 @@
     <script>
 
         // difficulty level
-        var level = '5'
+        var level = '5000'
 
         var board = null
         var $board = $('#myBoard')
@@ -228,46 +239,6 @@
             board.position(game.fen())
         }
 
-
-        function makeRandomMove() {
-            var possibleMoves = game.moves({
-                verbose: true
-            })
-
-            // exit if the game is over
-            if (game.game_over()) return
-
-            var randomIdx = Math.floor(Math.random() * possibleMoves.length)
-            var move = possibleMoves[randomIdx]
-
-            if (move.color === 'w') {
-                $board.find('.' + squareClass).removeClass('highlight-white')
-                $board.find('.square-' + move.from).addClass('highlight-white')
-                squareToHighlight = move.to
-                colorToHighlight = 'white'
-            } else {
-                $board.find('.' + squareClass).removeClass('highlight-black')
-                $board.find('.square-' + move.from).addClass('highlight-black')
-                squareToHighlight = move.to
-                colorToHighlight = 'black'
-            }
-
-            game.move(possibleMoves[randomIdx].san)
-
-            // highlight black's move
-
-            //squareToHighlight = move.to
-
-
-
-            board.position(game.fen())
-
-            //window.setTimeout(makeRandomMove, 1200)
-        }
-
-
-
-
         function onMoveEnd() {
             $board.find('.square-' + squareToHighlight).addClass('highlight-' + colorToHighlight)
         }
@@ -294,7 +265,6 @@
                 stockfishMove()
             }
 
-
         }
 
         function flipBoard() {
@@ -306,16 +276,13 @@
                 userColor = 'white'
             )
 
-
             console.log(userColor)
 
         }
 
         function gameEnd() {
 
-
-
-
+            // TODO
 
         }
 
@@ -346,7 +313,8 @@
             checkGameEnd()
 
             var message = "position fen " + game.fen()
-            var goMessage = "go depth " + level
+            //var goMessage = "go depth " + level
+            var goMessage = "go movetime " + level
             var bestmove = null
             var move = null
             console.log(message);
@@ -371,17 +339,6 @@
                 }
             }
 
-
-
-
-            //console.log(move)
-            //addHighlights(move)
-
-            // // highlight black's move
-            // removeHighlights('black')
-            // $board.find('.square-' + move.from).addClass('highlight-black')
-            // $board.find('.square-' + move.to).addClass('highlight-black')
-            // //squareToHighlight = move.to
         }
 
 
@@ -390,8 +347,7 @@
 
 
         function pieceTheme(piece) {
-            // wikipedia theme for white pieces
-
+            // pull svg piece images from wikipedia
             if (piece == 'bB') {
                 return 'https://upload.wikimedia.org/wikipedia/commons/9/98/Chess_bdt45.svg'
             } else if (piece == 'bK') {
@@ -417,13 +373,6 @@
             } else if (piece == 'wR') {
                 return 'https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg'
             }
-
-            // if (piece.search(/w/) !== -1) {
-            //     return 'img/chesspieces/wikipedia/' + piece + '.png'
-            // }
-
-            // // alpha theme for black pieces
-            // return 'img/chesspieces/alpha/' + piece + '.png'
         }
 
         var config = {
@@ -439,13 +388,10 @@
             //onSnapEnd: onSnapEnd
         }
 
+
         var board = Chessboard('myBoard', config)
-
-        //var stockfish = new Worker("stockfish/src/stockfish.js");
-
         var stockfish = STOCKFISH();
 
-        //window.setTimeout(makeRandomMove, 500)
 
 
 
@@ -454,18 +400,10 @@
         $('#clearBtn').on('click', clearBoard)
         $('#startBtn').on('click', startGame)
 
-
-
-
-
         $('#flipOrientationBtn').on('click', flipBoard)
 
 
     </script>
-
-
-
-
 
 
 
