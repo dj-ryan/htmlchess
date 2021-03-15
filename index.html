@@ -12,10 +12,6 @@
     <!-- load jquery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <!-- load chessboard.js library stylesheet-->
-    <!-- <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
-        integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous"> -->
-
     <!-- load chessboard.js library source code-->
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
         integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
@@ -26,7 +22,6 @@
 
     <!-- load stockfish library-->
     <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/src/stockfish.asm.min.js"></script>
-
 
 
     <style>
@@ -51,13 +46,13 @@
         }
 
         .white-1e1d7 {
-            background-color: #f0d9b5;
-            color: #b58863
+            background-color: #eeeeeb;
+            color: #33694c
         }
 
         .black-3c85d {
-            background-color: #b58863;
-            color: #f0d9b5
+            background-color: #33694c;
+            color: #eeeeeb
         }
 
         .highlight1-32417,
@@ -89,6 +84,11 @@
         .highlight-black {
             box-shadow: inset 0 0 3px 3px blue;
         }
+
+        #myBoard {
+            width: 500px;
+            margin: auto;
+        }
     </style>
 
 
@@ -99,7 +99,7 @@
 
     <h1>htmlchess</h1>
 
-    <div id="myBoard" style="width: 500px"></div>
+    <div id="myBoard"></div>
 
 
     <button id="setBtn">Set Board</button>
@@ -272,10 +272,11 @@
         }
 
         function clearBoard() {
-            board.clear()
-            game.clear()
             removeHighlights('white')
             removeHighlights('black')
+            board.clear()
+            game.clear()
+
         }
 
         function setBoard() {
@@ -288,7 +289,7 @@
             board.start()
             game.reset()
 
-            if(userColor == 'black') {
+            if (userColor == 'black') {
                 stockfishMove()
             }
 
@@ -343,24 +344,6 @@
             // check to see if the game has come to an end
             checkGameEnd()
 
-
-
-
-
-            // if (move.color === 'w') {
-            //     $board.find('.' + squareClass).removeClass('highlight-white')
-            //     $board.find('.square-' + move.from).addClass('highlight-white')
-            //     squareToHighlight = move.to
-            //     colorToHighlight = 'white'
-            // } else {
-            //     $board.find('.' + squareClass).removeClass('highlight-black')
-            //     $board.find('.square-' + move.from).addClass('highlight-black')
-            //     squareToHighlight = move.to
-            //     colorToHighlight = 'black'
-            // }
-
-
-
             var message = "position fen " + game.fen()
             var goMessage = "go depth " + level
             var bestmove = null
@@ -400,8 +383,20 @@
             // //squareToHighlight = move.to
         }
 
+
+
+        function pieceTheme(piece) {
+            // wikipedia theme for white pieces
+            if (piece.search(/w/) !== -1) {
+                return 'img/chesspieces/wikipedia/' + piece + '.png'
+            }
+
+            // alpha theme for black pieces
+            return 'img/chesspieces/alpha/' + piece + '.png'
+        }
+
         var config = {
-            //pieceTheme: 'img/chesspieces/alpha/{piece}.png',
+            pieceTheme: pieceTheme,
             draggable: true,
             dropOffBoard: 'trash',
             position: 'start',
