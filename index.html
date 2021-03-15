@@ -13,8 +13,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <!-- load chessboard.js library stylesheet-->
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
-        integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+        integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous"> -->
 
     <!-- load chessboard.js library source code-->
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
@@ -30,7 +30,6 @@
 
 
     <style>
-        /*! chessboard.js v1.0.0 | (c) 2019 Chris Oakman | MIT License chessboardjs.com/license */
         .clearfix-7da63 {
             clear: both
         }
@@ -115,13 +114,6 @@
     <p id="output"></p>
 
 
-
-
-
-
-
-
-
     <script>
 
         // difficulty level
@@ -144,11 +136,11 @@
         }
 
         function addHighlights(move) {
-            if (game.turn() === 'w') {
+            if (game.turn() === 'b') {
                 removeHighlights('white')
-                $board.find('.square-' + source).addClass('highlight-white')
-                $board.find('.square-' + target).addClass('highlight-white')
-            } else if (game.turn() === 'b') {
+                $board.find('.square-' + move.from).addClass('highlight-white')
+                $board.find('.square-' + move.to).addClass('highlight-white')
+            } else if (game.turn() === 'w') {
                 removeHighlights('black')
                 $board.find('.square-' + move.from).addClass('highlight-black')
                 $board.find('.square-' + move.to).addClass('highlight-black')
@@ -192,7 +184,7 @@
                 promotion: 'q' // NOTE: always promote to a queen for example simplicity
             })
 
-
+            // console.log("move: " + game.turn())
 
             // illegal move
             if (move === null) return 'snapback'
@@ -203,11 +195,8 @@
             // make random move
             //window.setTimeout(makeRandomMove, 250)
 
-            if (game.turn() === 'b') {
-                stockfishMove()
-            } else {
-                console.log("your turn.")
-            }
+            stockfishMove()
+
 
         }
 
@@ -234,46 +223,46 @@
             removeGreySquares()
         }
 
-        // function onSnapEnd() {
-        //     board.position(game.fen())
-        // }
+        function onSnapEnd() {
+            board.position(game.fen())
+        }
 
 
-        // function makeRandomMove() {
-        //     var possibleMoves = game.moves({
-        //         verbose: true
-        //     })
+        function makeRandomMove() {
+            var possibleMoves = game.moves({
+                verbose: true
+            })
 
-        //     // exit if the game is over
-        //     if (game.game_over()) return
+            // exit if the game is over
+            if (game.game_over()) return
 
-        //     var randomIdx = Math.floor(Math.random() * possibleMoves.length)
-        //     var move = possibleMoves[randomIdx]
+            var randomIdx = Math.floor(Math.random() * possibleMoves.length)
+            var move = possibleMoves[randomIdx]
 
-        //     if (move.color === 'w') {
-        //         $board.find('.' + squareClass).removeClass('highlight-white')
-        //         $board.find('.square-' + move.from).addClass('highlight-white')
-        //         squareToHighlight = move.to
-        //         colorToHighlight = 'white'
-        //     } else {
-        //         $board.find('.' + squareClass).removeClass('highlight-black')
-        //         $board.find('.square-' + move.from).addClass('highlight-black')
-        //         squareToHighlight = move.to
-        //         colorToHighlight = 'black'
-        //     }
+            if (move.color === 'w') {
+                $board.find('.' + squareClass).removeClass('highlight-white')
+                $board.find('.square-' + move.from).addClass('highlight-white')
+                squareToHighlight = move.to
+                colorToHighlight = 'white'
+            } else {
+                $board.find('.' + squareClass).removeClass('highlight-black')
+                $board.find('.square-' + move.from).addClass('highlight-black')
+                squareToHighlight = move.to
+                colorToHighlight = 'black'
+            }
 
-        //     game.move(possibleMoves[randomIdx].san)
+            game.move(possibleMoves[randomIdx].san)
 
-        //     // highlight black's move
+            // highlight black's move
 
-        //     //squareToHighlight = move.to
+            //squareToHighlight = move.to
 
 
 
-        //     board.position(game.fen())
+            board.position(game.fen())
 
-        //     //window.setTimeout(makeRandomMove, 1200)
-        // }
+            //window.setTimeout(makeRandomMove, 1200)
+        }
 
 
 
@@ -291,19 +280,17 @@
 
         function setBoard() {
             board.start()
-            game.reset()
+            game = null
         }
 
         function startGame() {
+            var game = new Chess()
             board.start()
             game.reset()
 
-            // console.log("which color do you want to play")
-
-
-            // userColor = console.readline()
-
-            // console.log(userColor)
+            if(userColor == 'black') {
+                stockfishMove()
+            }
 
 
         }
@@ -316,6 +303,9 @@
             } else (
                 userColor = 'white'
             )
+
+
+            console.log(userColor)
 
         }
 
@@ -392,10 +382,15 @@
                     bestmove = event.substr(9, 4)
                     console.log(bestmove)
                     move = game.move(bestmove, { sloppy: true })
+                    addHighlights(move)
                     board.position(game.fen())
                 }
             }
 
+
+
+
+            //console.log(move)
             //addHighlights(move)
 
             // // highlight black's move
