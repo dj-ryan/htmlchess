@@ -1,0 +1,409 @@
+<!doctype html>
+<html>
+
+<head>
+
+    <!-- jquery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+
+    <!-- chess board library-->
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+        integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
+
+
+    <!--Load stockfish-->
+
+
+    <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/src/stockfish.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/src/stockfish.asm.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/build.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/src/stockfish.wasm"></script> -->
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chess.js@0.11.0/chess.min.js"></script>
+
+    <style type="text/css">
+        .highlight-white {
+            box-shadow: inset 0 0 3px 3px yellow;
+        }
+
+        .highlight-black {
+            box-shadow: inset 0 0 3px 3px blue;
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+    <h1>htmlchess</h1>
+
+    <div id="myBoard" style="width: 400px"></div>
+
+
+    <button id="setBtn">Set Board</button>
+    <button id="clearBtn">Clear Board</button>
+    <button id="startBtn">Start Game</button>
+
+    <button id="flipOrientationBtn">Flip orientation</button>
+    <br />
+
+    <p id="gameEnd"></p>
+
+    <p id="output"></p>
+
+
+
+
+    <!-- load chess board library-->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"
+        crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+        crossorigin="anonymous"></script>
+
+
+
+
+    <script>
+
+        // difficulty level
+        var level = '10'
+
+        var board = null
+        var $board = $('#myBoard')
+        var game = new Chess()
+        var squareClass = 'square-55d63'
+        var squareToHighlight = null
+        var colorToHighlight = null
+        var whiteSquareGrey = '#a9a9a9'
+        var blackSquareGrey = '#696969'
+
+        var userColor = 'white';
+
+
+        function removeHighlights(color) {
+            $board.find('.' + squareClass).removeClass('highlight-' + color)
+        }
+
+        function addHighlights(move) {
+            if (game.turn() === 'w') {
+                removeHighlights('white')
+                $board.find('.square-' + source).addClass('highlight-white')
+                $board.find('.square-' + target).addClass('highlight-white')
+            } else if (game.turn() === 'b') {
+                removeHighlights('black')
+                $board.find('.square-' + move.from).addClass('highlight-black')
+                $board.find('.square-' + move.to).addClass('highlight-black')
+            }
+        }
+
+        function removeGreySquares() {
+            $('#myBoard .square-55d63').css('background', '')
+        }
+
+        function greySquare(square) {
+            var $square = $('#myBoard .square-' + square)
+
+            var background = whiteSquareGrey
+            if ($square.hasClass('black-3c85d')) {
+                background = blackSquareGrey
+            }
+
+            $square.css('background', background)
+        }
+
+        function onDragStart(source, piece) {
+            // do not pick up pieces if the game is over
+            if (game.game_over()) return false
+
+            // or if it's not that side's turn
+            if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                return false
+            }
+        }
+
+        function onDrop(source, target) {
+            removeGreySquares()
+
+            // see if the move is legal
+            var move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q' // NOTE: always promote to a queen for example simplicity
+            })
+
+            // illegal move
+            if (move === null) return 'snapback'
+
+            // highlight white's move
+            addHighlights(move)
+
+            // make random move
+            //window.setTimeout(makeRandomMove, 250)
+
+            if (game.turn() === 'b') {
+                stockfishMove()
+            } else {
+                console.log("your turn.")
+            }
+
+        }
+
+        function onMouseoverSquare(square, piece) {
+            // get list of possible moves for this square
+            var moves = game.moves({
+                square: square,
+                verbose: true
+            })
+
+            // exit if there are no moves available for this square
+            if (moves.length === 0) return
+
+            // highlight the square they moused over
+            greySquare(square)
+
+            // highlight the possible squares for this piece
+            for (var i = 0; i < moves.length; i++) {
+                greySquare(moves[i].to)
+            }
+        }
+
+        function onMouseoutSquare(square, piece) {
+            removeGreySquares()
+        }
+
+        function onSnapEnd() {
+            board.position(game.fen())
+        }
+
+
+        function makeRandomMove() {
+            var possibleMoves = game.moves({
+                verbose: true
+            })
+
+            // exit if the game is over
+            if (game.game_over()) return
+
+            var randomIdx = Math.floor(Math.random() * possibleMoves.length)
+            var move = possibleMoves[randomIdx]
+
+            if (move.color === 'w') {
+                $board.find('.' + squareClass).removeClass('highlight-white')
+                $board.find('.square-' + move.from).addClass('highlight-white')
+                squareToHighlight = move.to
+                colorToHighlight = 'white'
+            } else {
+                $board.find('.' + squareClass).removeClass('highlight-black')
+                $board.find('.square-' + move.from).addClass('highlight-black')
+                squareToHighlight = move.to
+                colorToHighlight = 'black'
+            }
+
+            game.move(possibleMoves[randomIdx].san)
+
+            // highlight black's move
+
+            //squareToHighlight = move.to
+
+
+
+            board.position(game.fen())
+
+            //window.setTimeout(makeRandomMove, 1200)
+        }
+
+        function onMoveEnd() {
+            $board.find('.square-' + squareToHighlight)
+                .addClass('highlight-' + colorToHighlight)
+        }
+
+        function clearBoard() {
+            board.clear()
+            game.clear()
+            removeHighlights('white')
+            removeHighlights('black')
+        }
+
+        function setBoard() {
+            board.start()
+            game.reset()
+        }
+
+        function startGame() {
+            board.start()
+            game.reset()
+
+            // console.log("which color do you want to play")
+
+
+            // userColor = console.readline()
+
+            // console.log(userColor)
+
+
+        }
+
+        function flipBoard() {
+            board.flip()
+
+            if (userColor === 'white') {
+                userColor = 'black'
+            } else (
+                userColor = 'white'
+            )
+
+        }
+
+        function gameEnd() {
+
+
+
+
+
+        }
+
+
+        function checkGameEnd() {
+            if (game.in_checkmate()) {
+                document.getElementById("gameEnd").innerHTML = "Game has ended by Checkmate!";
+                gameEnd()
+            } else if (game.in_draw()) {
+                document.getElementById("gameEnd").innerHTML = "Game has ended in a draw!";
+                gameEnd()
+            } else if (game.in_stalemate()) {
+                document.getElementById("gameEnd").innerHTML = "Game has ended in a stalemate!";
+                gameEnd()
+            } else if (game.in_threefold_repetition()) {
+                document.getElementById("gameEnd").innerHTML = "Game has ended by threefold repetition!";
+                gameEnd()
+            } else if (game.insufficient_material()) {
+                document.getElementById("gameEnd").innerHTML = "Game has ended by insufficient material!";
+                gameEnd()
+            }
+        }
+
+
+        function stockfishMove() {
+
+            // check to see if the game has come to an end
+            checkGameEnd()
+
+
+
+
+
+            // if (move.color === 'w') {
+            //     $board.find('.' + squareClass).removeClass('highlight-white')
+            //     $board.find('.square-' + move.from).addClass('highlight-white')
+            //     squareToHighlight = move.to
+            //     colorToHighlight = 'white'
+            // } else {
+            //     $board.find('.' + squareClass).removeClass('highlight-black')
+            //     $board.find('.square-' + move.from).addClass('highlight-black')
+            //     squareToHighlight = move.to
+            //     colorToHighlight = 'black'
+            // }
+
+
+
+            var message = "position fen " + game.fen()
+            var goMessage = "go depth " + level
+            var bestmove = null
+            var move = null
+            console.log(message);
+
+            //stockfish.postMessage("ucinewgame")
+            stockfish.postMessage(message)
+            stockfish.postMessage(goMessage)
+
+
+
+            stockfish.onmessage = function (event) {
+                //NOTE: Web Workers wrap the response in an object.
+                //console.log(event.data ? event.data : event);
+                console.log(event)
+                
+                //find bestmove substring
+                if (event.includes("bestmove")) {
+                    bestmove = event.substr(9, 4)
+                    console.log(bestmove)
+                    move = game.move(bestmove, { sloppy: true })
+                    board.position(game.fen())
+                }
+            }
+
+
+
+            // // highlight black's move
+            // removeHighlights('black')
+            // $board.find('.square-' + move.from).addClass('highlight-black')
+            // $board.find('.square-' + move.to).addClass('highlight-black')
+            // //squareToHighlight = move.to
+        }
+
+        var config = {
+            //pieceTheme: 'img/chesspieces/alpha/{piece}.png',
+            draggable: true,
+            dropOffBoard: 'trash',
+            position: 'start',
+            sparePieces: true,
+            onDragStart: onDragStart,
+            onDrop: onDrop,
+            onMouseoutSquare: onMouseoutSquare,
+            onMouseoverSquare: onMouseoverSquare,
+            onSnapEnd: onSnapEnd
+        }
+
+        var board = Chessboard('myBoard', config)
+
+        //var stockfish = new Worker("stockfish/src/stockfish.js");
+
+        var stockfish = STOCKFISH();
+
+
+
+        // stockfish.postMessage("go depth 15");
+
+
+
+        //var stockfish = STOCKFISH();
+
+        //stockfish.postMessage("go depth 15");
+
+        //window.setTimeout(makeRandomMove, 500)
+
+
+
+
+        $('#setBtn').on('click', setBoard)
+        $('#clearBtn').on('click', clearBoard)
+        $('#startBtn').on('click', startGame)
+
+
+
+
+
+        $('#flipOrientationBtn').on('click', flipBoard)
+
+
+    </script>
+
+
+
+
+
+
+
+</body>
+
+</html>
