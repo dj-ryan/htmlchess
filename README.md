@@ -17,9 +17,9 @@ Tested on:
 
 
 ### Libraries used:
-[stockfish.js](https://github.com/nmrugg/stockfish.js)
-- a clone of the stockfish library in js
-- [Full stockfish](https://github.com/official-stockfish/Stockfish)
+-[stockfish.js](https://github.com/nmrugg/stockfish.js)
+    - a clone of the stockfish library in js
+    - [Full stockfish](https://github.com/official-stockfish/Stockfish)
 [chess.js](https://github.com/jhlywa/chess.js)
 - Javascript chess library that is used for chess move generation/validation, piece placement/movement, and check/checkmate/stalemate detection
 [chessboardjs](https://github.com/oakmac/chessboardjs/)
