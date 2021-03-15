@@ -1,7 +1,10 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
+
+
+    <title>htmlchess</title>
 
     <!-- jquery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -12,19 +15,23 @@
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
         integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
 
-
     <!--Load stockfish-->
-
-
-    <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/src/stockfish.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/src/stockfish.asm.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/build.js"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/src/stockfish.wasm"></script> -->
-
-
-
+    <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/src/stockfish.asm.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/chess.js@0.11.0/chess.min.js"></script>
+
+    <!-- load chess board library-->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"
+        crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+        crossorigin="anonymous"></script>
+
+
+
+
 
     <style type="text/css">
         .highlight-white {
@@ -60,14 +67,7 @@
 
 
 
-    <!-- load chess board library-->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
-        integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"
-        crossorigin="anonymous"></script>
 
-    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
-        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
-        crossorigin="anonymous"></script>
 
 
 
@@ -322,7 +322,6 @@
             var move = null
             console.log(message);
 
-            //stockfish.postMessage("ucinewgame")
             stockfish.postMessage(message)
             stockfish.postMessage(goMessage)
 
