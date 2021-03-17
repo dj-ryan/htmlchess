@@ -120,11 +120,9 @@
     <button id="flipOrientationBtn">Flip orientation</button>
     <br />
 
-    <p id="output"></p>
-
     <p id="gameEnd"></p>
 
-
+    <p id="output"></p>
 
 
 
@@ -142,7 +140,31 @@
         var whiteSquareGrey = '#a9a9a9'
         var blackSquareGrey = '#696969'
 
+        var boardPosition = null
+
         var userColor = 'white';
+
+
+
+        var configStart = {
+            pieceTheme: pieceTheme,
+            draggable: true,
+            dropOffBoard: 'trash',
+            position: boardPosition,
+            sparePieces: true,
+            onDragStart: onDragStart,
+            onDrop: onDrop,
+            onMouseoutSquare: onMouseoutSquare,
+            onMouseoverSquare: onMouseoverSquare,
+            //onSnapEnd: onSnapEnd
+        }
+
+        var configFree = {
+            pieceTheme: pieceTheme,
+            draggable: true,
+            dropOffBoard: 'trash',
+            sparePieces: true
+        }
 
 
         function removeHighlights(color) {
@@ -252,9 +274,10 @@
         function clearBoard() {
             removeHighlights('white')
             removeHighlights('black')
-            board.clear()
-            game = null;
+            board.destroy()
+            board = Chessboard('myBoard', configFree)
 
+            game = null;
         }
 
         function setBoard() {
@@ -263,9 +286,12 @@
         }
 
         function startGame() {
+            
             game = new Chess()
-            board.start()
-            game.reset()
+            console.log(board.fen())
+            game.load(board.fen())
+            boardPosition = board.fen()
+            board = Chessboard('myBoard', configStart)
 
             if (userColor == 'black') {
                 stockfishMove()
@@ -291,11 +317,11 @@
             // TODO
 
         }
-    
+
 
         function checkCheck() {
             var check = game.in_check()
-            
+
 
 
 
@@ -310,7 +336,7 @@
             if (game.in_checkmate()) {
                 document.getElementById("gameEnd").innerHTML = "Game has ended by Checkmate! " + winner + " has won!";
 
-          } else if (game.in_draw()) {
+            } else if (game.in_draw()) {
                 document.getElementById("gameEnd").innerHTML = "Game has ended in a draw!" + winner + " has won!";
 
             } else if (game.in_stalemate()) {
@@ -322,7 +348,7 @@
             } else if (game.insufficient_material()) {
                 document.getElementById("gameEnd").innerHTML = "Game has ended by insufficient material!" + winner + " has won!";
             }
-            gameEnd()  
+            gameEnd()
         }
 
 
@@ -348,7 +374,7 @@
                 //NOTE: Web Workers wrap the response in an object.
                 //console.log(event.data ? event.data : event);
                 console.log(event)
-                
+
                 //find bestmove substring
                 if (event.includes("bestmove")) {
                     bestmove = event.substr(9, 4)
@@ -357,8 +383,6 @@
                     addHighlights(move)
                     board.position(game.fen())
                     checkGameEnd()
-                } else {
-                    document.getElementById("output").innerHTML = event;
                 }
             }
 
@@ -399,21 +423,9 @@
             }
         }
 
-        var config = {
-            pieceTheme: pieceTheme,
-            draggable: true,
-            dropOffBoard: 'trash',
-            position: 'start',
-            sparePieces: true,
-            onDragStart: onDragStart,
-            onDrop: onDrop,
-            onMouseoutSquare: onMouseoutSquare,
-            onMouseoverSquare: onMouseoverSquare,
-            //onSnapEnd: onSnapEnd
-        }
 
 
-        var board = Chessboard('myBoard', config)
+        var board = Chessboard('myBoard', configStart)
         var stockfish = STOCKFISH();
 
 
