@@ -17,7 +17,7 @@ Tested on:
 
 
 ### Libraries used:
--[stockfish.js](https://github.com/nmrugg/stockfish.js)
+- [stockfish.js](https://github.com/nmrugg/stockfish.js)
     - a clone of the stockfish library in js
     - [Full stockfish](https://github.com/official-stockfish/Stockfish)
 [chess.js](https://github.com/jhlywa/chess.js)
