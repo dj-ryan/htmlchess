@@ -120,7 +120,7 @@
     <button id="flipOrientationBtn">Flip orientation</button>
     <br />
 
-    <p id="gameEnd"></p>
+    <p id="gameEnd">test</p>
 
     <p id="output"></p>
 
@@ -129,7 +129,7 @@
     <script>
 
         // difficulty level
-        var level = '5000'
+        var level = '10'
 
         var board = null
         var $board = $('#myBoard')
@@ -189,6 +189,8 @@
             removeGreySquares()
 
 
+
+
             // see if the move is legal
             var move = game.move({
                 from: source,
@@ -206,6 +208,8 @@
 
             // make random move
             //window.setTimeout(makeRandomMove, 250)
+
+            checkGameEnd()
 
             stockfishMove()
 
@@ -247,17 +251,17 @@
             removeHighlights('white')
             removeHighlights('black')
             board.clear()
-            game.clear()
+            game = null;
 
         }
 
         function setBoard() {
+            clearBoard()
             board.start()
-            game = null
         }
 
         function startGame() {
-            var game = new Chess()
+            game = new Chess()
             board.start()
             game.reset()
 
@@ -285,36 +289,50 @@
             // TODO
 
         }
+    
 
+        function checkCheck() {
+            var check = game.in_check()
+            
+
+
+
+        }
 
         function checkGameEnd() {
-            if (game.in_checkmate()) {
-                document.getElementById("gameEnd").innerHTML = "Game has ended by Checkmate!";
-                gameEnd()
-            } else if (game.in_draw()) {
-                document.getElementById("gameEnd").innerHTML = "Game has ended in a draw!";
-                gameEnd()
-            } else if (game.in_stalemate()) {
-                document.getElementById("gameEnd").innerHTML = "Game has ended in a stalemate!";
-                gameEnd()
-            } else if (game.in_threefold_repetition()) {
-                document.getElementById("gameEnd").innerHTML = "Game has ended by threefold repetition!";
-                gameEnd()
-            } else if (game.insufficient_material()) {
-                document.getElementById("gameEnd").innerHTML = "Game has ended by insufficient material!";
-                gameEnd()
+            var winner = "White";
+            if (game.turn() == 'w') {
+                winner = "Black"
             }
+
+            if (game.in_checkmate()) {
+                document.getElementById("gameEnd").innerHTML = "Game has ended by Checkmate! " + winner + " has won!";
+
+          } else if (game.in_draw()) {
+                document.getElementById("gameEnd").innerHTML = "Game has ended in a draw!" + winner + " has won!";
+
+            } else if (game.in_stalemate()) {
+                document.getElementById("gameEnd").innerHTML = "Game has ended in a stalemate!" + winner + " has won!";
+
+            } else if (game.in_threefold_repetition()) {
+                document.getElementById("gameEnd").innerHTML = "Game has ended by threefold repetition!" + winner + " has won!";
+
+            } else if (game.insufficient_material()) {
+                document.getElementById("gameEnd").innerHTML = "Game has ended by insufficient material!" + winner + " has won!";
+            }
+            gameEnd()  
         }
 
 
         function stockfishMove() {
 
             // check to see if the game has come to an end
-            checkGameEnd()
+
 
             var message = "position fen " + game.fen()
-            //var goMessage = "go depth " + level
-            var goMessage = "go movetime " + level
+            // depth 
+            var goMessage = "go depth " + level
+            //var goMessage = "go movetime " + level
             var bestmove = null
             var move = null
             console.log(message);
@@ -336,8 +354,10 @@
                     move = game.move(bestmove, { sloppy: true })
                     addHighlights(move)
                     board.position(game.fen())
+                    checkGameEnd()
                 }
             }
+
 
         }
 
