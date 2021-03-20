@@ -36,6 +36,31 @@
 
 
     <style>
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 24px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+        }
+
+        .button:hover {
+            background-color: #3e8e41
+        }
+
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+
         .clearfix-7da63 {
             clear: both
         }
@@ -108,23 +133,23 @@
 
 <body>
 
-    <h1>Jackson is Awesome</h1>
+    <h1>htmlchess</h1>
 
     <div id="myBoard"></div>
 
 
-    <button id="setBtn">Set Board</button>
-    <button id="clearBtn">Clear Board</button>
-    <button id="startBtn">Start Game</button>
+    <button class="button" id="setBtn">Set Board</button>
+    <button class="button" id="clearBtn">Clear Board</button>
+    <button class="button" id="startBtn">Start Game</button>
 
 
-    <button id="flipOrientationBtn">Flip orientation</button>
+    <button class="button" id="flipOrientationBtn">Flip orientation</button>
 
     <br>
     <br>
 
-    <button id="goBackBtn">Back</button>
-    <button id="goFowardBtn">Forward</button>
+    <button class="button" id="goBackBtn">Back</button>
+    <button class="button" id="goFowardBtn">Forward</button>
     <br>
 
     <p id="gameEnd"></p>
@@ -378,14 +403,14 @@
 
         function goBack() {
 
-            if(index > 1) {
-            console.log("current: " + index + " | " + moveList[index])
-            index = index - 2
-            console.log("back: " +  + index + " | " + moveList[index])
-            game.load(moveList[index])
-            board.position(moveList[index])
+            if (index > 1) {
+                console.log("current: " + index + " | " + moveList[index])
+                index = index - 2
+                console.log("back: " + + index + " | " + moveList[index])
+                game.load(moveList[index])
+                board.position(moveList[index])
             } else {
-                
+
             }
 
 
