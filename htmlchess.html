@@ -108,7 +108,7 @@
 
 <body>
 
-    <h1>htmlchess</h1>
+    <h1>Jackson is Awesome</h1>
 
     <div id="myBoard"></div>
 
@@ -117,8 +117,15 @@
     <button id="clearBtn">Clear Board</button>
     <button id="startBtn">Start Game</button>
 
+
     <button id="flipOrientationBtn">Flip orientation</button>
-    <br />
+
+    <br>
+    <br>
+
+    <button id="goBackBtn">Back</button>
+    <button id="goFowardBtn">Forward</button>
+    <br>
 
     <p id="gameEnd"></p>
 
@@ -131,7 +138,8 @@
     <script>
 
         // difficulty level
-        var level = '2000'
+        var mode = 'level'
+        var level = '10'
 
         var board = null
         var $board = $('#myBoard')
@@ -142,9 +150,10 @@
         var whiteSquareGrey = '#a9a9a9'
         var blackSquareGrey = '#696969'
 
-        var boardPosition = null
+        var moveList = []
+        var index = 0
 
-        var userColor = 'white';
+        var userColor = 'white'
 
 
 
@@ -152,7 +161,6 @@
             pieceTheme: pieceTheme,
             draggable: true,
             dropOffBoard: 'trash',
-            //position: boardPosition,
             sparePieces: true,
             onDragStart: onDragStart,
             onDrop: onDrop,
@@ -224,20 +232,21 @@
                 promotion: 'q' // NOTE: always promote to a queen for example simplicity
             })
 
-            // console.log("move: " + game.turn())
 
             // illegal move
             if (move === null) return 'snapback'
 
-            // highlight white's move
+
             addHighlights(move)
 
-            // make random move
-            //window.setTimeout(makeRandomMove, 250)
 
             checkGameEnd()
 
             document.getElementById("output2").innerHTML = game.fen();
+
+            moveList.push(game.fen())
+
+            index++
 
             stockfishMove()
 
@@ -290,12 +299,13 @@
         }
 
         function startGame() {
-            
+
             game = new Chess()
             game.load(board.fen() + " w KQkq - 0 1")
-            //boardPosition = board.fen()
             board = Chessboard('myBoard', configStart)
             board.position(game.fen())
+            moveList.push(game.fen())
+            index = 0
 
             if (userColor == 'black') {
                 stockfishMove()
@@ -356,6 +366,32 @@
         }
 
 
+
+
+        function goFoward() {
+
+
+
+
+        }
+
+
+        function goBack() {
+
+            if(index > 1) {
+            console.log("current: " + index + " | " + moveList[index])
+            index = index - 2
+            console.log("back: " +  + index + " | " + moveList[index])
+            game.load(moveList[index])
+            board.position(moveList[index])
+            } else {
+                
+            }
+
+
+        }
+
+
         function stockfishMove() {
 
             // check to see if the game has come to an end
@@ -363,8 +399,15 @@
 
             var message = "position fen " + game.fen()
             // depth 
-            //var goMessage = "go depth " + level
-            var goMessage = "go movetime " + level
+
+            var goMessage = null
+
+            if (mode = 'time') {
+                goMessage = "go movetime " + level
+            } else {
+                goMessage = "go depth " + level
+            }
+            //var goMessage = "go movetime " + level
             var bestmove = null
             var move = null
             console.log(message);
@@ -388,6 +431,8 @@
                     board.position(game.fen())
                     checkGameEnd()
                     document.getElementById("output2").innerHTML = game.fen();
+                    moveList.push(game.fen())
+                    index++
                 } else {
                     document.getElementById("output1").innerHTML = event;
                 }
@@ -442,6 +487,10 @@
         $('#setBtn').on('click', setBoard)
         $('#clearBtn').on('click', clearBoard)
         $('#startBtn').on('click', startGame)
+
+        $('#goBackBtn').on('click', goBack)
+        $('#goFowardBtn').on('click', goFoward)
+
 
         $('#flipOrientationBtn').on('click', flipBoard)
 
