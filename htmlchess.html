@@ -36,37 +36,59 @@
 
 
     <style>
+        .column {
+            float: left;
+            width: 33.33%;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
         .button {
             display: inline-block;
-            padding: 15px 25px;
-            font-size: 24px;
+            padding: 10px 20px;
+            font-size: 15px;
             cursor: pointer;
             text-align: center;
             text-decoration: none;
             outline: none;
             color: #fff;
-            background-color: #4CAF50;
+            background-color: #33694c;
             border: none;
             border-radius: 15px;
             box-shadow: 0 9px #999;
         }
 
         .button:hover {
-            background-color: #3e8e41
+            background-color: #4a986e
         }
 
         .button:active {
-            background-color: #3e8e41;
+            background-color: #4a986e;
             box-shadow: 0 5px #666;
             transform: translateY(4px);
         }
+
+        .disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+
+
+
+
 
         .clearfix-7da63 {
             clear: both
         }
 
         .board-b72b1 {
-            border: 10px solid #404040;
+            border: 5px solid #404040;
             box-sizing: content-box
         }
 
@@ -122,8 +144,34 @@
         }
 
         #myBoard {
-            width: 400px;
+            width: 500px;
             margin: auto;
+        }
+
+        #log-container {
+            overflow: auto;
+            height: 150px;
+        }
+
+        .log-warn {
+            color: orange
+        }
+
+        .log-error {
+            color: red
+        }
+
+        .log-info {
+            color: skyblue
+        }
+
+        .log-log {
+            color: silver
+        }
+
+        .log-warn,
+        .log-error {
+            font-weight: bold;
         }
     </style>
 
@@ -135,34 +183,51 @@
 
     <h1>htmlchess</h1>
 
-    <div id="myBoard"></div>
+    <div class="row">
+        <div class="column">
+
+            <button class="button" id="setBtn">Set Board</button>
+            <button class="button" id="clearBtn">Clear Board</button>
+            <button class="button" id="startBtn">Start Game</button>
 
 
-    <button class="button" id="setBtn">Set Board</button>
-    <button class="button" id="clearBtn">Clear Board</button>
-    <button class="button" id="startBtn">Start Game</button>
+            <button class="button" id="flipOrientationBtn">Flip orientation</button>
+
+            <br>
+            <br>
+
+            <button class="button" id="goBackBtn">Back</button>
+            <button class="button disabled" id="goFowardBtn">Forward</button>
+            <br>
+
+            <p id="gameEnd"></p>
+
+            <p id="output1"></p>
+            <p id="output2"></p>
+            <p id="output3"></p>
+
+        </div>
+        <div class="column">
+            <div id="myBoard"></div>
+        </div>
+        <div class="column">
+
+        </div>
+    </div>
+
+    <div id="log-container">
+        <pre id="log"></pre>
+      </div>
 
 
-    <button class="button" id="flipOrientationBtn">Flip orientation</button>
-
-    <br>
-    <br>
-
-    <button class="button" id="goBackBtn">Back</button>
-    <button class="button" id="goFowardBtn">Forward</button>
-    <br>
-
-    <p id="gameEnd"></p>
-
-    <p id="output1"></p>
-    <p id="output2"></p>
-    <p id="output3"></p>
 
 
 
     <script>
 
         // difficulty level
+
+        // TODO be able to change mode and level
         var mode = 'level'
         var level = '10'
 
@@ -353,18 +418,19 @@
 
         function gameEnd() {
 
-            // TODO
+            // TODO write game end function
 
         }
 
-
+        // TODO highlight in check square
         function checkCheck() {
             var check = game.in_check()
+        }
 
-
-
+        function takenPieces() {
 
         }
+
 
         function checkGameEnd() {
             var winner = "White";
@@ -393,15 +459,15 @@
 
 
 
-        function goFoward() {
+        function stepFoward() {
 
-
+            // TODO write step foward function
 
 
         }
 
 
-        function goBack() {
+        function stepBack() {
 
             if (index > 1) {
                 console.log("current: " + index + " | " + moveList[index])
@@ -410,20 +476,24 @@
                 game.load(moveList[index])
                 board.position(moveList[index])
             } else {
-
+                // TODO send error message 
             }
 
 
         }
 
+        function displayError(error) {
+            // TODO error handling
+        }
+
 
         function stockfishMove() {
 
-            // check to see if the game has come to an end
+
 
 
             var message = "position fen " + game.fen()
-            // depth 
+
 
             var goMessage = null
 
@@ -432,7 +502,6 @@
             } else {
                 goMessage = "go depth " + level
             }
-            //var goMessage = "go movetime " + level
             var bestmove = null
             var move = null
             console.log(message);
@@ -465,6 +534,61 @@
 
 
         }
+
+
+
+
+
+        rewireLoggingToElement(
+            () => document.getElementById("log"),
+            () => document.getElementById("log-container"), true);
+
+        function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
+            fixLoggingFunc('log');
+            fixLoggingFunc('debug');
+            fixLoggingFunc('warn');
+            fixLoggingFunc('error');
+            fixLoggingFunc('info');
+
+            function fixLoggingFunc(name) {
+                console['old' + name] = console[name];
+                console[name] = function (...arguments) {
+                    const output = produceOutput(name, arguments);
+                    const eleLog = eleLocator();
+
+                    if (autoScroll) {
+                        const eleContainerLog = eleOverflowLocator();
+                        const isScrolledToBottom = eleContainerLog.scrollHeight - eleContainerLog.clientHeight <= eleContainerLog.scrollTop + 1;
+                        eleLog.innerHTML += output + "<br>";
+                        if (isScrolledToBottom) {
+                            eleContainerLog.scrollTop = eleContainerLog.scrollHeight - eleContainerLog.clientHeight;
+                        }
+                    } else {
+                        eleLog.innerHTML += output + "<br>";
+                    }
+
+                    console['old' + name].apply(undefined, arguments);
+                };
+            }
+
+            function produceOutput(name, args) {
+                return args.reduce((output, arg) => {
+                    return output +
+                        "<span class=\"log-" + (typeof arg) + " log-" + name + "\">" +
+                        (typeof arg === "object" && (JSON || {}).stringify ? JSON.stringify(arg) : arg) +
+                        "</span>&nbsp;";
+                }, '');
+            }
+        }
+
+
+        // setInterval(() => {
+        //     const method = (['log', 'debug', 'warn', 'error', 'info'][Math.floor(Math.random() * 5)]);
+        //     console[method](method, 'logging something...');
+        // }, 200);
+
+
+
 
 
 
@@ -513,8 +637,8 @@
         $('#clearBtn').on('click', clearBoard)
         $('#startBtn').on('click', startGame)
 
-        $('#goBackBtn').on('click', goBack)
-        $('#goFowardBtn').on('click', goFoward)
+        $('#goBackBtn').on('click', stepBack)
+        $('#goFowardBtn').on('click', stepFoward)
 
 
         $('#flipOrientationBtn').on('click', flipBoard)
