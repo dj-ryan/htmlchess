@@ -183,6 +183,7 @@
 
     <h1>htmlchess</h1>
 
+
     <div class="row">
         <div class="column">
 
@@ -199,6 +200,9 @@
             <button class="button" id="goBackBtn">Back</button>
             <button class="button disabled" id="goFowardBtn">Forward</button>
             <br>
+            <br>
+            <br>
+
 
             <p id="gameEnd"></p>
 
@@ -217,7 +221,7 @@
 
     <div id="log-container">
         <pre id="log"></pre>
-      </div>
+    </div>
 
 
 
@@ -266,6 +270,18 @@
             sparePieces: true
         }
 
+
+
+        function initializePage() {
+
+
+            // TODO initialize page 
+
+
+
+
+
+        }
 
         function removeHighlights(color) {
             $board.find('.' + squareClass).removeClass('highlight-' + color)
@@ -461,7 +477,7 @@
 
         function stepFoward() {
 
-            // TODO write step foward function
+            // TODO write step forward function
 
 
         }
@@ -469,21 +485,27 @@
 
         function stepBack() {
 
-            if (index > 1) {
-                console.log("current: " + index + " | " + moveList[index])
-                index = index - 2
-                console.log("back: " + + index + " | " + moveList[index])
-                game.load(moveList[index])
-                board.position(moveList[index])
-            } else {
-                // TODO send error message 
-            }
+            game.undo()
+            game.undo()
+            board.position(game.fen());
+
+            // if (index > 1) {
+            //     console.log("current: " + index + " | " + moveList[index])
+            //     index = index - 2
+            //     console.log("back: " + + index + " | " + moveList[index])
+            //     game.load(moveList[index])
+            //     board.position(moveList[index])
+            // } else {
+            //     // TODO send error message 
+            // }
 
 
         }
 
         function displayError(error) {
-            // TODO error handling
+            if (error = 201) {
+                console.log(" ")
+            }
         }
 
 
@@ -499,7 +521,7 @@
 
             if (mode = 'time') {
                 goMessage = "go movetime " + level
-            } else {
+            } else if (mode = 'level') {
                 goMessage = "go depth " + level
             }
             var bestmove = null
@@ -513,13 +535,11 @@
 
             stockfish.onmessage = function (event) {
                 //NOTE: Web Workers wrap the response in an object.
-                //console.log(event.data ? event.data : event);
-                console.log(event)
+                console.log(event.data ? event.data : event);
 
                 //find bestmove substring
                 if (event.includes("bestmove")) {
                     bestmove = event.substr(9, 4)
-                    console.log(bestmove)
                     move = game.move(bestmove, { sloppy: true })
                     addHighlights(move)
                     board.position(game.fen())
@@ -534,6 +554,8 @@
 
 
         }
+
+        
 
 
 
@@ -582,16 +604,6 @@
         }
 
 
-        // setInterval(() => {
-        //     const method = (['log', 'debug', 'warn', 'error', 'info'][Math.floor(Math.random() * 5)]);
-        //     console[method](method, 'logging something...');
-        // }, 200);
-
-
-
-
-
-
 
 
 
@@ -628,6 +640,20 @@
 
         var board = Chessboard('myBoard', configFree)
         var stockfish = STOCKFISH();
+
+        
+        // var settings = "setoption name MultiPV value 3"
+        // console.log(settings)
+        // stockfish.postMessage(settings)
+        
+        // settings = "debug on"
+        // console.log(settings)
+        // stockfish.postMessage(settings)
+
+        // settings = "setoption UCI_ShowWDL"
+        // console.log(settings)
+        // stockfish.postMessage(settings)
+
 
 
 
