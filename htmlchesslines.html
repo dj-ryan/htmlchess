@@ -31,6 +31,7 @@
     <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/src/stockfish.asm.min.js"></script>
 
     <style>
+      /* Row column html styling */
       .column {
         float: left;
         width: 33.33%;
@@ -395,72 +396,9 @@
         var check = game.in_check();
       }
 
-      function takenPieces() {
-
-        // TODO determine taken pieces
-
-        var currentPosition = game.fen()
-
-        var pieces = {
-        whiteQueen: 0,
-        whiteRook: 0,
-        whiteKnight: 0,
-        whiteBishop: 0,
-        whitePawn: 0,
-        blackQueen: 0,
-        blackRook: 0,
-        blackKnight: 0,
-        blackBishop: 0,
-        blackPawn: 0,
-        }
-
-        var i;
-        for (i = 0; i < currentPosition.length; i++) {
-            var piece = currentPosition[i]
-            
-            switch (piece) {
-                case 'Q':
-                    pieces.whiteQueen += 1
-                    break
-                case 'R':
-                    pieces.whiteRook += 1
-                    break
-                case 'N':
-                    pieces.whiteKnight +=1
-                    break
-                case 'B':
-                    pieces.whiteBishop += 1
-                    break
-                case 'P':
-                    pieces.whitePawn =+ 1
-                    break
-                case 'q':
-                    pieces.blackQueen += 1
-                    break
-                case 'r':
-                    pieces.blackRook += 1
-                    break
-                case 'n': 
-                    pieces.blackKnight += 1
-                    break
-                case 'b': 
-                    pieces.blackBishop += 1
-                    break
-                case 'p': 
-                    pieces.blackPawn += 1           
-            }
-
-            return pieces
-
-        }
-
-
-
-
-      }
+      function takenPieces() {}
 
       function checkGameEnd() {
-        // determine winner
         var winner = "White";
         if (game.turn() == "w") {
           winner = "Black";
@@ -494,7 +432,6 @@
         game.undo();
         board.position(game.fen());
 
-        // local implementation step back
         // if (index > 1) {
         //     console.log("current: " + index + " | " + moveList[index])
         //     index = index - 2
@@ -510,17 +447,6 @@
         if ((error = 201)) {
           console.log(" ");
         }
-      }
-
-      function passTurn() {
-        
-        // TODO function to be called at the end of player or computer turn
-        // handles who moves next and any functions that need to be called at the end of each turn
-
-
-
-
-
       }
 
       function stockfishMove() {
@@ -544,7 +470,7 @@
           //NOTE: Web Workers wrap the response in an object.
           console.log(event.data ? event.data : event);
 
-          //find bestmove substring
+          // find bestmove substring
           if (event.includes("bestmove")) {
             bestmove = event.substr(9, 4);
             move = game.move(bestmove, { sloppy: true });
@@ -650,6 +576,25 @@
 
       var board = Chessboard("myBoard", configFree);
       var stockfish = STOCKFISH();
+
+      stockfish.onmessage = function (event) {
+          //NOTE: Web Workers wrap the response in an object.
+          console.log(event.data ? event.data : event);
+
+          // find bestmove substring
+          if (event.includes("bestmove")) {
+            bestmove = event.substr(9, 4);
+            move = game.move(bestmove, { sloppy: true });
+            addHighlights(move);
+            board.position(game.fen());
+            checkGameEnd();
+            document.getElementById("output2").innerHTML = game.fen();
+            moveList.push(game.fen());
+            index++;
+          } else {
+            document.getElementById("output1").innerHTML = event;
+          }
+        };
 
       // var settings = "setoption name MultiPV value 3"
       // console.log(settings)
