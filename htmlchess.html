@@ -1,20 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
-
-
-
-
-    <meta charset="UTF-8">
-    <meta name="description" content="An html file that can beat you at chess">
-    <meta name="keywords" content="Chess, HTML, JavaScript, Stockfish">
-    <meta name="author" content="David Ryan">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="An html file that can beat you at chess"
+    />
+    <meta name="keywords" content="Chess, HTML, JavaScript, Stockfish" />
+    <meta name="author" content="David Ryan" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>htmlchess</title>
 
@@ -24,9 +18,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <!-- load chessboard.js library source code-->
-    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
-        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
-        crossorigin="anonymous"></script>
+    <script
+      src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+      integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+      crossorigin="anonymous"
+    ></script>
 
     <!-- load chess.js library-->
     <script src="https://cdn.jsdelivr.net/npm/chess.js@0.11.0/chess.min.js"></script>
@@ -34,646 +30,572 @@
     <!-- load stockfish library-->
     <script src="https://cdn.jsdelivr.net/npm/stockfish@11.0.0/src/stockfish.asm.min.js"></script>
 
-
     <style>
-        .column {
-            float: left;
-            width: 33.33%;
-        }
+      .column {
+        float: left;
+        width: 33.33%;
+      }
 
-        /* Clear floats after the columns */
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
+      /* Clear floats after the columns */
+      .row:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
 
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 15px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            outline: none;
-            color: #fff;
-            background-color: #33694c;
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 9px #999;
-        }
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 15px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        outline: none;
+        color: #fff;
+        background-color: #33694c;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 9px #999;
+      }
 
-        .button:hover {
-            background-color: #4a986e
-        }
+      .button:hover {
+        background-color: #4a986e;
+      }
 
-        .button:active {
-            background-color: #4a986e;
-            box-shadow: 0 5px #666;
-            transform: translateY(4px);
-        }
+      .button:active {
+        background-color: #4a986e;
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+      }
 
-        .disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+      .disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
+      .clearfix-7da63 {
+        clear: both;
+      }
 
+      .board-b72b1 {
+        border: 5px solid #404040;
+        box-sizing: content-box;
+      }
 
+      .square-55d63 {
+        float: left;
+        position: relative;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
 
+      .white-1e1d7 {
+        background-color: #eeeeeb;
+        color: #33694c;
+      }
 
+      .black-3c85d {
+        background-color: #33694c;
+        color: #eeeeeb;
+      }
 
-        .clearfix-7da63 {
-            clear: both
-        }
+      .highlight1-32417,
+      .highlight2-9c5d2 {
+        box-shadow: inset 0 0 3px 3px #ff0;
+      }
 
-        .board-b72b1 {
-            border: 5px solid #404040;
-            box-sizing: content-box
-        }
+      .notation-322f9 {
+        cursor: default;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        position: absolute;
+      }
 
-        .square-55d63 {
-            float: left;
-            position: relative;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none
-        }
+      .alpha-d2270 {
+        bottom: 1px;
+        right: 3px;
+      }
 
-        .white-1e1d7 {
-            background-color: #eeeeeb;
-            color: #33694c
-        }
+      .numeric-fc462 {
+        top: 2px;
+        left: 2px;
+      }
 
-        .black-3c85d {
-            background-color: #33694c;
-            color: #eeeeeb
-        }
+      .highlight-white {
+        box-shadow: inset 0 0 3px 3px yellow;
+      }
 
-        .highlight1-32417,
-        .highlight2-9c5d2 {
-            box-shadow: inset 0 0 3px 3px #ff0
-        }
+      .highlight-black {
+        box-shadow: inset 0 0 3px 3px blue;
+      }
 
-        .notation-322f9 {
-            cursor: default;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 14px;
-            position: absolute
-        }
+      #myBoard {
+        width: 500px;
+        margin: auto;
+      }
 
-        .alpha-d2270 {
-            bottom: 1px;
-            right: 3px
-        }
+      #log-container {
+        overflow: auto;
+        height: 150px;
+      }
 
-        .numeric-fc462 {
-            top: 2px;
-            left: 2px
-        }
+      .log-warn {
+        color: orange;
+      }
 
-        .highlight-white {
-            box-shadow: inset 0 0 3px 3px yellow;
-        }
+      .log-error {
+        color: red;
+      }
 
-        .highlight-black {
-            box-shadow: inset 0 0 3px 3px blue;
-        }
+      .log-info {
+        color: skyblue;
+      }
 
-        #myBoard {
-            width: 500px;
-            margin: auto;
-        }
+      .log-log {
+        color: silver;
+      }
 
-        #log-container {
-            overflow: auto;
-            height: 150px;
-        }
-
-        .log-warn {
-            color: orange
-        }
-
-        .log-error {
-            color: red
-        }
-
-        .log-info {
-            color: skyblue
-        }
-
-        .log-log {
-            color: silver
-        }
-
-        .log-warn,
-        .log-error {
-            font-weight: bold;
-        }
+      .log-warn,
+      .log-error {
+        font-weight: bold;
+      }
     </style>
+  </head>
 
-
-</head>
-
-
-<body>
-
+  <body>
     <h1>htmlchess</h1>
 
-
     <div class="row">
-        <div class="column">
+      <div class="column">
+        <button class="button" id="setBtn">Set Board</button>
+        <button class="button" id="clearBtn">Clear Board</button>
+        <button class="button" id="startBtn">Start Game</button>
 
-            <button class="button" id="setBtn">Set Board</button>
-            <button class="button" id="clearBtn">Clear Board</button>
-            <button class="button" id="startBtn">Start Game</button>
+        <button class="button" id="flipOrientationBtn">Flip orientation</button>
 
+        <br />
+        <br />
 
-            <button class="button" id="flipOrientationBtn">Flip orientation</button>
+        <button class="button" id="goBackBtn">Back</button>
+        <button class="button disabled" id="goFowardBtn">Forward</button>
+        <br />
+        <br />
+        <br />
 
-            <br>
-            <br>
+        <p id="gameEnd"></p>
 
-            <button class="button" id="goBackBtn">Back</button>
-            <button class="button disabled" id="goFowardBtn">Forward</button>
-            <br>
-            <br>
-            <br>
-
-
-            <p id="gameEnd"></p>
-
-            <p id="output1"></p>
-            <p id="output2"></p>
-            <p id="output3"></p>
-
-        </div>
-        <div class="column">
-            <div id="myBoard"></div>
-        </div>
-        <div class="column">
-
-        </div>
+        <p id="output1"></p>
+        <p id="output2"></p>
+        <p id="output3"></p>
+      </div>
+      <div class="column">
+        <div id="myBoard"></div>
+      </div>
+      <div class="column"></div>
     </div>
 
     <div id="log-container">
-        <pre id="log"></pre>
+      <pre id="log"></pre>
     </div>
 
-
-
-
-
     <script>
+      // difficulty level
 
-        // difficulty level
+      // TODO be able to change mode and level
+      var mode = "level";
+      var level = "10";
 
-        // TODO be able to change mode and level
-        var mode = 'level'
-        var level = '10'
+      var board = null;
+      var $board = $("#myBoard");
+      var game = new Chess();
+      var squareClass = "square-55d63";
+      var squareToHighlight = null;
+      var colorToHighlight = null;
+      var whiteSquareGrey = "#a9a9a9";
+      var blackSquareGrey = "#696969";
 
-        var board = null
-        var $board = $('#myBoard')
-        var game = new Chess()
-        var squareClass = 'square-55d63'
-        var squareToHighlight = null
-        var colorToHighlight = null
-        var whiteSquareGrey = '#a9a9a9'
-        var blackSquareGrey = '#696969'
+      var moveList = [];
+      var index = 0;
 
-        var moveList = []
-        var index = 0
+      var userColor = "white";
 
-        var userColor = 'white'
+      var configStart = {
+        pieceTheme: pieceTheme,
+        draggable: true,
+        dropOffBoard: "trash",
+        sparePieces: true,
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onMouseoutSquare: onMouseoutSquare,
+        onMouseoverSquare: onMouseoverSquare,
+        //onSnapEnd: onSnapEnd
+      };
 
+      var configFree = {
+        pieceTheme: pieceTheme,
+        draggable: true,
+        dropOffBoard: "trash",
+        sparePieces: true,
+      };
 
+      function initializePage() {
+        // TODO initialize page
+      }
 
-        var configStart = {
-            pieceTheme: pieceTheme,
-            draggable: true,
-            dropOffBoard: 'trash',
-            sparePieces: true,
-            onDragStart: onDragStart,
-            onDrop: onDrop,
-            onMouseoutSquare: onMouseoutSquare,
-            onMouseoverSquare: onMouseoverSquare,
-            //onSnapEnd: onSnapEnd
+      function removeHighlights(color) {
+        $board.find("." + squareClass).removeClass("highlight-" + color);
+      }
+
+      function addHighlights(move) {
+        if (game.turn() === "b") {
+          removeHighlights("white");
+          $board.find(".square-" + move.from).addClass("highlight-white");
+          $board.find(".square-" + move.to).addClass("highlight-white");
+        } else if (game.turn() === "w") {
+          removeHighlights("black");
+          $board.find(".square-" + move.from).addClass("highlight-black");
+          $board.find(".square-" + move.to).addClass("highlight-black");
+        }
+      }
+
+      function removeGreySquares() {
+        $("#myBoard .square-55d63").css("background", "");
+      }
+
+      function greySquare(square) {
+        var $square = $("#myBoard .square-" + square);
+
+        var background = whiteSquareGrey;
+        if ($square.hasClass("black-3c85d")) {
+          background = blackSquareGrey;
         }
 
-        var configFree = {
-            pieceTheme: pieceTheme,
-            draggable: true,
-            dropOffBoard: 'trash',
-            sparePieces: true
+        $square.css("background", background);
+      }
+
+      function onDragStart(source, piece) {
+        // do not pick up pieces if the game is over
+        if (game.game_over()) return false;
+
+        // or if it's not that side's turn
+        if (
+          (game.turn() === "w" && piece.search(/^b/) !== -1) ||
+          (game.turn() === "b" && piece.search(/^w/) !== -1)
+        ) {
+          return false;
+        }
+      }
+
+      function onDrop(source, target) {
+        removeGreySquares();
+
+        // see if the move is legal
+        var move = game.move({
+          from: source,
+          to: target,
+          promotion: "q", // NOTE: always promote to a queen for example simplicity
+        });
+
+        // illegal move
+        if (move === null) return "snapback";
+
+        addHighlights(move);
+
+        checkGameEnd();
+
+        document.getElementById("output2").innerHTML = game.fen();
+
+        moveList.push(game.fen());
+
+        index++;
+
+        stockfishMove();
+      }
+
+      function onMouseoverSquare(square, piece) {
+        // get list of possible moves for this square
+        var moves = game.moves({
+          square: square,
+          verbose: true,
+        });
+
+        // exit if there are no moves available for this square
+        if (moves.length === 0) return;
+
+        // highlight the square they moused over
+        greySquare(square);
+
+        // highlight the possible squares for this piece
+        for (var i = 0; i < moves.length; i++) {
+          greySquare(moves[i].to);
+        }
+      }
+
+      function onMouseoutSquare(square, piece) {
+        removeGreySquares();
+      }
+
+      function onSnapEnd() {
+        board.position(game.fen());
+      }
+
+      function onMoveEnd() {
+        $board
+          .find(".square-" + squareToHighlight)
+          .addClass("highlight-" + colorToHighlight);
+      }
+
+      function clearBoard() {
+        removeHighlights("white");
+        removeHighlights("black");
+        board.destroy();
+        board = Chessboard("myBoard", configFree);
+
+        game = null;
+      }
+
+      function setBoard() {
+        clearBoard();
+        board.start();
+      }
+
+      function startGame() {
+        game = new Chess();
+        game.load(board.fen() + " w KQkq - 0 1");
+        board = Chessboard("myBoard", configStart);
+        board.position(game.fen());
+        moveList.push(game.fen());
+        index = 0;
+
+        if (userColor == "black") {
+          stockfishMove();
+        }
+      }
+
+      function flipBoard() {
+        board.flip();
+
+        if (userColor === "white") {
+          userColor = "black";
+        } else userColor = "white";
+
+        console.log(userColor);
+      }
+
+      function gameEnd() {
+        // TODO write game end function
+      }
+
+      // TODO highlight in check square
+      function checkCheck() {
+        var check = game.in_check();
+      }
+
+      function takenPieces() {}
+
+      function checkGameEnd() {
+        var winner = "White";
+        if (game.turn() == "w") {
+          winner = "Black";
         }
 
-
-
-        function initializePage() {
-
-
-            // TODO initialize page 
-
-
-
-
-
+        if (game.in_checkmate()) {
+          document.getElementById("gameEnd").innerHTML =
+            "Game has ended by Checkmate! " + winner + " has won!";
+        } else if (game.in_draw()) {
+          document.getElementById("gameEnd").innerHTML =
+            "Game has ended in a draw!" + winner + " has won!";
+        } else if (game.in_stalemate()) {
+          document.getElementById("gameEnd").innerHTML =
+            "Game has ended in a stalemate!" + winner + " has won!";
+        } else if (game.in_threefold_repetition()) {
+          document.getElementById("gameEnd").innerHTML =
+            "Game has ended by threefold repetition!" + winner + " has won!";
+        } else if (game.insufficient_material()) {
+          document.getElementById("gameEnd").innerHTML =
+            "Game has ended by insufficient material!" + winner + " has won!";
         }
+        gameEnd();
+      }
 
-        function removeHighlights(color) {
-            $board.find('.' + squareClass).removeClass('highlight-' + color)
+      function stepFoward() {
+        // TODO write step forward function
+      }
+
+      function stepBack() {
+        game.undo();
+        game.undo();
+        board.position(game.fen());
+
+        // if (index > 1) {
+        //     console.log("current: " + index + " | " + moveList[index])
+        //     index = index - 2
+        //     console.log("back: " + + index + " | " + moveList[index])
+        //     game.load(moveList[index])
+        //     board.position(moveList[index])
+        // } else {
+        //     // TODO send error message
+        // }
+      }
+
+      function displayError(error) {
+        if ((error = 201)) {
+          console.log(" ");
         }
+      }
 
-        function addHighlights(move) {
-            if (game.turn() === 'b') {
-                removeHighlights('white')
-                $board.find('.square-' + move.from).addClass('highlight-white')
-                $board.find('.square-' + move.to).addClass('highlight-white')
-            } else if (game.turn() === 'w') {
-                removeHighlights('black')
-                $board.find('.square-' + move.from).addClass('highlight-black')
-                $board.find('.square-' + move.to).addClass('highlight-black')
-            }
+      function stockfishMove() {
+        var message = "position fen " + game.fen();
+
+        var goMessage = null;
+
+        if ((mode = "time")) {
+          goMessage = "go movetime " + level;
+        } else if ((mode = "level")) {
+          goMessage = "go depth " + level;
         }
-
-        function removeGreySquares() {
-            $('#myBoard .square-55d63').css('background', '')
-        }
-
-        function greySquare(square) {
-            var $square = $('#myBoard .square-' + square)
-
-            var background = whiteSquareGrey
-            if ($square.hasClass('black-3c85d')) {
-                background = blackSquareGrey
-            }
-
-            $square.css('background', background)
-        }
-
-        function onDragStart(source, piece) {
-            // do not pick up pieces if the game is over
-            if (game.game_over()) return false
-
-            // or if it's not that side's turn
-            if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-                (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-                return false
-            }
-        }
-
-        function onDrop(source, target) {
-            removeGreySquares()
-
-
-
-
-            // see if the move is legal
-            var move = game.move({
-                from: source,
-                to: target,
-                promotion: 'q' // NOTE: always promote to a queen for example simplicity
-            })
-
-
-            // illegal move
-            if (move === null) return 'snapback'
-
-
-            addHighlights(move)
-
-
-            checkGameEnd()
-
-            document.getElementById("output2").innerHTML = game.fen();
-
-            moveList.push(game.fen())
-
-            index++
-
-            stockfishMove()
-
-
-        }
-
-        function onMouseoverSquare(square, piece) {
-            // get list of possible moves for this square
-            var moves = game.moves({
-                square: square,
-                verbose: true
-            })
-
-            // exit if there are no moves available for this square
-            if (moves.length === 0) return
-
-            // highlight the square they moused over
-            greySquare(square)
-
-            // highlight the possible squares for this piece
-            for (var i = 0; i < moves.length; i++) {
-                greySquare(moves[i].to)
-            }
-        }
-
-        function onMouseoutSquare(square, piece) {
-            removeGreySquares()
-        }
-
-        function onSnapEnd() {
-            board.position(game.fen())
-        }
-
-        function onMoveEnd() {
-            $board.find('.square-' + squareToHighlight).addClass('highlight-' + colorToHighlight)
-        }
-
-        function clearBoard() {
-            removeHighlights('white')
-            removeHighlights('black')
-            board.destroy()
-            board = Chessboard('myBoard', configFree)
-
-            game = null;
-        }
-
-        function setBoard() {
-            clearBoard()
-            board.start()
-        }
-
-        function startGame() {
-
-            game = new Chess()
-            game.load(board.fen() + " w KQkq - 0 1")
-            board = Chessboard('myBoard', configStart)
-            board.position(game.fen())
-            moveList.push(game.fen())
-            index = 0
-
-            if (userColor == 'black') {
-                stockfishMove()
-            }
-
-        }
-
-        function flipBoard() {
-            board.flip()
-
-            if (userColor === 'white') {
-                userColor = 'black'
-            } else (
-                userColor = 'white'
-            )
-
-            console.log(userColor)
-
-        }
-
-        function gameEnd() {
-
-            // TODO write game end function
-
-        }
-
-        // TODO highlight in check square
-        function checkCheck() {
-            var check = game.in_check()
-        }
-
-        function takenPieces() {
-
-        }
-
-
-        function checkGameEnd() {
-            var winner = "White";
-            if (game.turn() == 'w') {
-                winner = "Black"
-            }
-
-            if (game.in_checkmate()) {
-                document.getElementById("gameEnd").innerHTML = "Game has ended by Checkmate! " + winner + " has won!";
-
-            } else if (game.in_draw()) {
-                document.getElementById("gameEnd").innerHTML = "Game has ended in a draw!" + winner + " has won!";
-
-            } else if (game.in_stalemate()) {
-                document.getElementById("gameEnd").innerHTML = "Game has ended in a stalemate!" + winner + " has won!";
-
-            } else if (game.in_threefold_repetition()) {
-                document.getElementById("gameEnd").innerHTML = "Game has ended by threefold repetition!" + winner + " has won!";
-
-            } else if (game.insufficient_material()) {
-                document.getElementById("gameEnd").innerHTML = "Game has ended by insufficient material!" + winner + " has won!";
-            }
-            gameEnd()
-        }
-
-
-
-
-        function stepFoward() {
-
-            // TODO write step forward function
-
-
-        }
-
-
-        function stepBack() {
-
-            game.undo()
-            game.undo()
+        var bestmove = null;
+        var move = null;
+        console.log(message);
+
+        stockfish.postMessage(message);
+        stockfish.postMessage(goMessage);
+
+        stockfish.onmessage = function (event) {
+          //NOTE: Web Workers wrap the response in an object.
+          console.log(event.data ? event.data : event);
+
+          //find bestmove substring
+          if (event.includes("bestmove")) {
+            bestmove = event.substr(9, 4);
+            move = game.move(bestmove, { sloppy: true });
+            addHighlights(move);
             board.position(game.fen());
+            checkGameEnd();
+            document.getElementById("output2").innerHTML = game.fen();
+            moveList.push(game.fen());
+            index++;
+          } else {
+            document.getElementById("output1").innerHTML = event;
+          }
+        };
+      }
 
-            // if (index > 1) {
-            //     console.log("current: " + index + " | " + moveList[index])
-            //     index = index - 2
-            //     console.log("back: " + + index + " | " + moveList[index])
-            //     game.load(moveList[index])
-            //     board.position(moveList[index])
-            // } else {
-            //     // TODO send error message 
-            // }
+      rewireLoggingToElement(
+        () => document.getElementById("log"),
+        () => document.getElementById("log-container"),
+        true
+      );
 
+      function rewireLoggingToElement(
+        eleLocator,
+        eleOverflowLocator,
+        autoScroll
+      ) {
+        fixLoggingFunc("log");
+        fixLoggingFunc("debug");
+        fixLoggingFunc("warn");
+        fixLoggingFunc("error");
+        fixLoggingFunc("info");
 
+        function fixLoggingFunc(name) {
+          console["old" + name] = console[name];
+          console[name] = function (...arguments) {
+            const output = produceOutput(name, arguments);
+            const eleLog = eleLocator();
+
+            if (autoScroll) {
+              const eleContainerLog = eleOverflowLocator();
+              const isScrolledToBottom =
+                eleContainerLog.scrollHeight - eleContainerLog.clientHeight <=
+                eleContainerLog.scrollTop + 1;
+              eleLog.innerHTML += output + "<br>";
+              if (isScrolledToBottom) {
+                eleContainerLog.scrollTop =
+                  eleContainerLog.scrollHeight - eleContainerLog.clientHeight;
+              }
+            } else {
+              eleLog.innerHTML += output + "<br>";
+            }
+
+            console["old" + name].apply(undefined, arguments);
+          };
         }
 
-        function displayError(error) {
-            if (error = 201) {
-                console.log(" ")
-            }
+        function produceOutput(name, args) {
+          return args.reduce((output, arg) => {
+            return (
+              output +
+              '<span class="log-' +
+              typeof arg +
+              " log-" +
+              name +
+              '">' +
+              (typeof arg === "object" && (JSON || {}).stringify
+                ? JSON.stringify(arg)
+                : arg) +
+              "</span>&nbsp;"
+            );
+          }, "");
         }
+      }
 
-
-        function stockfishMove() {
-
-
-
-
-            var message = "position fen " + game.fen()
-
-
-            var goMessage = null
-
-            if (mode = 'time') {
-                goMessage = "go movetime " + level
-            } else if (mode = 'level') {
-                goMessage = "go depth " + level
-            }
-            var bestmove = null
-            var move = null
-            console.log(message);
-
-            stockfish.postMessage(message)
-            stockfish.postMessage(goMessage)
-
-
-
-            stockfish.onmessage = function (event) {
-                //NOTE: Web Workers wrap the response in an object.
-                console.log(event.data ? event.data : event);
-
-                //find bestmove substring
-                if (event.includes("bestmove")) {
-                    bestmove = event.substr(9, 4)
-                    move = game.move(bestmove, { sloppy: true })
-                    addHighlights(move)
-                    board.position(game.fen())
-                    checkGameEnd()
-                    document.getElementById("output2").innerHTML = game.fen();
-                    moveList.push(game.fen())
-                    index++
-                } else {
-                    document.getElementById("output1").innerHTML = event;
-                }
-            }
-
-
+      function pieceTheme(piece) {
+        // pull svg piece images from wikipedia
+        if (piece == "bB") {
+          return "https://upload.wikimedia.org/wikipedia/commons/9/98/Chess_bdt45.svg";
+        } else if (piece == "bK") {
+          return "https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg";
+        } else if (piece == "bN") {
+          return "https://upload.wikimedia.org/wikipedia/commons/e/ef/Chess_ndt45.svg";
+        } else if (piece == "bP") {
+          return "https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg";
+        } else if (piece == "bQ") {
+          return "https://upload.wikimedia.org/wikipedia/commons/4/47/Chess_qdt45.svg";
+        } else if (piece == "bR") {
+          return "https://upload.wikimedia.org/wikipedia/commons/f/ff/Chess_rdt45.svg";
+        } else if (piece == "wB") {
+          return "https://upload.wikimedia.org/wikipedia/commons/b/b1/Chess_blt45.svg";
+        } else if (piece == "wK") {
+          return "https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg";
+        } else if (piece == "wN") {
+          return "https://upload.wikimedia.org/wikipedia/commons/7/70/Chess_nlt45.svg";
+        } else if (piece == "wP") {
+          return "https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg";
+        } else if (piece == "wQ") {
+          return "https://upload.wikimedia.org/wikipedia/commons/1/15/Chess_qlt45.svg";
+        } else if (piece == "wR") {
+          return "https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg";
         }
+      }
 
-        
+      var board = Chessboard("myBoard", configFree);
+      var stockfish = STOCKFISH();
 
+      // var settings = "setoption name MultiPV value 3"
+      // console.log(settings)
+      // stockfish.postMessage(settings)
 
+      // settings = "debug on"
+      // console.log(settings)
+      // stockfish.postMessage(settings)
 
+      // settings = "setoption UCI_ShowWDL"
+      // console.log(settings)
+      // stockfish.postMessage(settings)
 
+      $("#setBtn").on("click", setBoard);
+      $("#clearBtn").on("click", clearBoard);
+      $("#startBtn").on("click", startGame);
 
-        rewireLoggingToElement(
-            () => document.getElementById("log"),
-            () => document.getElementById("log-container"), true);
+      $("#goBackBtn").on("click", stepBack);
+      $("#goFowardBtn").on("click", stepFoward);
 
-        function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
-            fixLoggingFunc('log');
-            fixLoggingFunc('debug');
-            fixLoggingFunc('warn');
-            fixLoggingFunc('error');
-            fixLoggingFunc('info');
-
-            function fixLoggingFunc(name) {
-                console['old' + name] = console[name];
-                console[name] = function (...arguments) {
-                    const output = produceOutput(name, arguments);
-                    const eleLog = eleLocator();
-
-                    if (autoScroll) {
-                        const eleContainerLog = eleOverflowLocator();
-                        const isScrolledToBottom = eleContainerLog.scrollHeight - eleContainerLog.clientHeight <= eleContainerLog.scrollTop + 1;
-                        eleLog.innerHTML += output + "<br>";
-                        if (isScrolledToBottom) {
-                            eleContainerLog.scrollTop = eleContainerLog.scrollHeight - eleContainerLog.clientHeight;
-                        }
-                    } else {
-                        eleLog.innerHTML += output + "<br>";
-                    }
-
-                    console['old' + name].apply(undefined, arguments);
-                };
-            }
-
-            function produceOutput(name, args) {
-                return args.reduce((output, arg) => {
-                    return output +
-                        "<span class=\"log-" + (typeof arg) + " log-" + name + "\">" +
-                        (typeof arg === "object" && (JSON || {}).stringify ? JSON.stringify(arg) : arg) +
-                        "</span>&nbsp;";
-                }, '');
-            }
-        }
-
-
-
-
-
-        function pieceTheme(piece) {
-            // pull svg piece images from wikipedia
-            if (piece == 'bB') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/9/98/Chess_bdt45.svg'
-            } else if (piece == 'bK') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg'
-            } else if (piece == 'bN') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/e/ef/Chess_ndt45.svg'
-            } else if (piece == 'bP') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg'
-            } else if (piece == 'bQ') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/4/47/Chess_qdt45.svg'
-            } else if (piece == 'bR') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Chess_rdt45.svg'
-            } else if (piece == 'wB') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Chess_blt45.svg'
-            } else if (piece == 'wK') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg'
-            } else if (piece == 'wN') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/7/70/Chess_nlt45.svg'
-            } else if (piece == 'wP') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg'
-            } else if (piece == 'wQ') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/1/15/Chess_qlt45.svg'
-            } else if (piece == 'wR') {
-                return 'https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg'
-            }
-        }
-
-
-
-        var board = Chessboard('myBoard', configFree)
-        var stockfish = STOCKFISH();
-
-        
-        // var settings = "setoption name MultiPV value 3"
-        // console.log(settings)
-        // stockfish.postMessage(settings)
-        
-        // settings = "debug on"
-        // console.log(settings)
-        // stockfish.postMessage(settings)
-
-        // settings = "setoption UCI_ShowWDL"
-        // console.log(settings)
-        // stockfish.postMessage(settings)
-
-
-
-
-
-
-        $('#setBtn').on('click', setBoard)
-        $('#clearBtn').on('click', clearBoard)
-        $('#startBtn').on('click', startGame)
-
-        $('#goBackBtn').on('click', stepBack)
-        $('#goFowardBtn').on('click', stepFoward)
-
-
-        $('#flipOrientationBtn').on('click', flipBoard)
-
-
+      $("#flipOrientationBtn").on("click", flipBoard);
     </script>
-
-
-
-</body>
-
+  </body>
 </html>
