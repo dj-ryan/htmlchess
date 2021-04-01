@@ -217,11 +217,13 @@
         <button class="button disabled" id="goFowardBtn">Forward</button>
         <br />
         <br />
-        <br />
         <input type="text" id="fenInput" placeholder="FEN string input" />
         <br />
         <br />
         <button class="button" id="enterFENbtn">Enter</button>
+        <br>
+        <br>
+        <button class="button" id="showInfoBtn">show info</button>
 
         <p id="gameEnd"></p>
 
@@ -243,23 +245,24 @@
             <a href="http://davidryan.info">David Ryan</a>
           </p>
           <p>
-            The full source code can be found on the
-            <a href="https://github.com/dj-ryan/htmlchess">HTMLCHESS</a>
+            The full source code can be found in the
+            <a href="https://github.com/dj-ryan/htmlchess">htmlchess</a>
             repository
           </p>
+          <h3>Usage:</h3>
+          <p>To initialize the board into the starting position press <button class="button" style="zoom: 0.5">Set Board</button></p>
+          <p>The Stockfish engin will not initialize until the <button class="button" style="zoom: 0.5">Start Game</button> button is pressed. It will evaluate the position that it is currently in wheather that is from the <button class="button" style="zoom: 0.5">Set Board</button> or the FEN string input</p>
           <h3>FEN notation:</h3>
           <p>
             Help with FEN notation can be found <a href="https://www.chess.com/terms/fen-chess">here</a>
+            An example of a valid FEN notation is given below:
             <br>
             <code>
-              &lt;FEN> ::= &lt;Piece Placement&gt; <br />
-              ' ' &lt;Side to move&gt; <br />
-              ' ' &lt;Castling ability&gt;<br />
-              ' ' &lt;En passant target square&gt;<br />
-              ' ' &lt;Halfmove clock&gt;<br />
-              ' ' &lt;Fullmove counter&gt;<br />
+              r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 1
             </code>
           </p>
+          <h3>Console log</h3>
+          To understand how the Javascript works there is direct output of <code>console.log()</code> to the webpage. 
           <button class="button" id="clearInfoBtn">clear</button>
         </div>
       </div>
@@ -332,9 +335,10 @@
       $("#goBackBtn").on("click", stepBack);
       $("#goFowardBtn").on("click", stepFoward);
 
-      $("#enterFENbtn").on("click", enterFEN);
+      $("#enterFENBtn").on("click", enterFEN);
 
       $("#clearInfoBtn").on("click", clearInfo);
+      $("#showInfoBtn").on("click", showInfo)
 
       // page initialization
       // function called at end of script
@@ -346,6 +350,9 @@
         console.log("Loading Stockfish...");
         stockfish = STOCKFISH();
         console.log("Stockfish loaded successfully.");
+
+        //hide showinfo btn
+        $("#showInfoBtn").hide();
 
         // web worker implementation
         //var stockfish = new Worker("stockfish.js");
@@ -438,12 +445,23 @@
 
       function clearInfo() {
         // hide info pane
-        //$("#info").hide();
+        $("#showInfoBtn").show();
+        $("#info").hide(100);
 
         // hide info column
-        $("#infoColumn").remove();
-        $(".column").css("width", "50%");
-        $("#myBoard").css("width", "600px");
+        //$("#infoColumn").remove();
+        $(".column").animate({"width": "50%"}, 100);
+        // $("#myBoard").css("width", "600px");
+      }
+
+      function showInfo() {
+
+        $(".column").animate({"width": "33%"}, 100);
+        // $("#myBoard").css("width", "400px");
+
+        $("#info").show(100);
+        $("#showInfoBtn").hide();
+
       }
 
       // ==== STOCKFISH HANDLING =====
