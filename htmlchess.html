@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta
-      name="description"
+      name="htmlchess"
       content="An html file that can beat you at chess"
     />
     <meta name="keywords" content="Chess, HTML, JavaScript, Stockfish" />
@@ -202,19 +202,9 @@
       <pre id="log"></pre>
     </div>
 
-
-
-
-
-
-
-
-
-
     <script>
-
       // var declaration
-      // TODO be able to change mode and level
+      //                                                                                           TODO be able to change mode and level
       var mode = "level";
       var level = "10";
 
@@ -222,13 +212,12 @@
       var $board = $("#myBoard");
       var game = new Chess();
       var squareClass = "square-55d63";
-      var squareToHighlight = null;
-      var colorToHighlight = null;
+      // var squareToHighlight = null;
+      // var colorToHighlight = null;
       var whiteSquareGrey = "#a9a9a9";
       var blackSquareGrey = "#696969";
 
       var moveList = [];
-      var index = 0;
 
       var userColor = "white";
 
@@ -243,6 +232,7 @@
         onMouseoutSquare: onMouseoutSquare,
         onMouseoverSquare: onMouseoverSquare,
         //onSnapEnd: onSnapEnd
+        //onMoveEnd: onMoveEnd
       };
 
       var configFree = {
@@ -250,24 +240,6 @@
         draggable: true,
         dropOffBoard: "trash",
         sparePieces: true,
-      };
-
-      // chess board initialization
-      var board = Chessboard("myBoard", configFree);
-      // stockfish initialization
-      var stockfish = STOCKFISH();
-
-      // web worker implementation
-      //var stockfish = new Worker("stockfish.js");
-
-      // onmessage set
-      stockfish.onmessage = function (event) {
-        // NOTE: Web Workers wrap the response in an object.
-        // not using a Web Worker at this time
-        console.log(event.data ? event.data : event);
-
-        // parse stockfish msg
-        parseStockfishMsg(event);
       };
 
       // stockfish settings testing
@@ -288,20 +260,37 @@
       $("#setBtn").on("click", setBoard);
       $("#clearBtn").on("click", clearBoard);
       $("#startBtn").on("click", startGame);
+      $("#flipOrientationBtn").on("click", flipBoard);
 
       $("#goBackBtn").on("click", stepBack);
       $("#goFowardBtn").on("click", stepFoward);
 
-      $("#flipOrientationBtn").on("click", flipBoard);
+      // page initialization
+      function initializePage() {
+        // function called at end of script
+        console.log("Initializing page...");
+        // chess board initialization in global variable
+        board = Chessboard("myBoard", configFree);
+        // stockfish initialization in global variable
+        console.log("Loading Stockfish...");
+        stockfish = STOCKFISH();
+        console.log("Stockfish successfully loaded.");
 
+        // web worker implementation
+        //var stockfish = new Worker("stockfish.js");
 
+        // onmessage set
+        stockfish.onmessage = function (event) {
+          // NOTE: Web Workers wrap the response in an object.
+          // not using a Web Worker at this time
+          console.log(event.data ? event.data : event);
 
+          // parse stockfish msg
+          parseStockfishMsg(event);
+        };
+      }
 
-
-
-
-
-      // ==== button functions ====
+      // ===== BUTTON FUNCTIONS =====
 
       function clearBoard() {
         removeHighlights("white");
@@ -323,7 +312,6 @@
         board = Chessboard("myBoard", configStart);
         board.position(game.fen());
         moveList.push(game.fen());
-        index = 0;
 
         if (userColor == "black") {
           stockfishMove();
@@ -341,7 +329,7 @@
       }
 
       function stepFoward() {
-        // TODO write step forward function
+        //                                                                                         TODO write step forward function
       }
 
       function stepBack() {
@@ -361,16 +349,7 @@
         // }
       }
 
-
-
-
-
-
-
-
-
-
-      // ==== stockfish handling ====
+      // ==== STOCKFISH HANDLING =====
 
       function stockfishMove() {
         // string to set stockfish position
@@ -389,71 +368,75 @@
         console.log(" => stockfish command: " + goMessage);
         sendStockfishMsg(goMessage);
 
-        //var bestMove = parseStockfishMsg();
+        //parseStockfishMsg();
       }
 
       function parseStockfishMsg(event) {
         var bestMove = null;
         var move = null;
-        // TODO parse stockfish reply message
+        //                                                                                         TODO parse stockfish reply message
 
         var msgType = event[0];
-        console.log(msgType);
+        console.log("msgType: " + msgType);
+
+        var info = {
+          depth: null,
+          cp: null,
+          nodes: null,
+          time: null
+        };
 
         switch (msgType) {
           case "i":
-            var info = {
-              depth: event.substr(11, 12),
+            info = {
+              depth: event.substr(11, 2),
             };
-            console.log("depth: " + info.depth);
+            //console.log("depth: " + info.depth);
             break;
           case "b":
-            pieces.whiteRook += 1;
             break;
         }
 
+        console.log("depth: " + info.depth);
+        
+        //                                                                                         TODO parse string based of of keyword index
+        // example stockfish event data
         // info depth 5 seldepth 6 multipv 1 score cp 40 nodes 1355 nps 7445 time 182 pv d7d5 d2d3 d5e4 d3e4 d8d1 e1d1 bmc 1.87422
 
         //find bestmove substring
-        // if (event.includes("bestmove")) {
-        //   bestMove = event.substr(9, 4);
-        //   move = game.move(bestMove, { sloppy: true });
-        //   addHighlights(move);
-        //   board.position(game.fen());
-        //   checkGameEnd();
-        //   document.getElementById("output2").innerHTML = game.fen();
-        //   moveList.push(game.fen());
-        //   index++;
-        // } else {
-        //   document.getElementById("output1").innerHTML = event;
-        // }
+        if (event.includes("bestmove")) {
+          bestMove = event.substr(9, 4);
+          console.log("Best Move: " + bestMove);
+          move = game.move(bestMove, { sloppy: true });
+          addHighlights(move);
+          board.position(game.fen());
+          checkGameEnd();
+          document.getElementById("output2").innerHTML = game.fen();
+          moveList.push(game.fen());
+        } else {
+          document.getElementById("output1").innerHTML = event;
+        }
       }
 
       function sendStockfishMsg(message) {
-        // TODO send message to stockfish
+        //                                                                                         TODO send message to stockfish
         stockfish.postMessage(message);
       }
 
-
-
-
-
-
-
-      // ==== Game Logic ====
+      // ===== GAME LOGIC =====
 
       function gameEnd() {
-        // TODO write game end function
+        //                                                                                         TODO write game end function
       }
 
-      // TODO highlight in check square
+      //                                                                                           TODO highlight in check square
       function checkCheck() {
         var check = game.in_check();
       }
 
       function passTurn() {
-        // TODO function to be called at the end of player or computer turn
-        // handles who moves next and any functions that need to be called at the end of each turn
+        //                                                                                         TODO function to be called at the end of player or computer turn
+        //                                                                                         handles who moves next and any functions that need to be called at the end of each turn
       }
 
       function checkGameEnd() {
@@ -482,15 +465,7 @@
         gameEnd();
       }
 
-
-
-
-
-
-      
-
-
-      // ==== chessboard config methods ====
+      // ===== CHESSBOARD METHOD DEFINITIONS =====
 
       function onDragStart(source, piece) {
         // do not pick up pieces if the game is over
@@ -526,8 +501,6 @@
 
         moveList.push(game.fen());
 
-        index++;
-
         stockfishMove();
       }
 
@@ -558,11 +531,11 @@
         board.position(game.fen());
       }
 
-      function onMoveEnd() {
-        $board
-          .find(".square-" + squareToHighlight)
-          .addClass("highlight-" + colorToHighlight);
-      }
+      // function onMoveEnd() {
+      //   $board
+      //     .find(".square-" + squareToHighlight)
+      //     .addClass("highlight-" + colorToHighlight);
+      // }
 
       // piece theme image fetch
       function pieceTheme(piece) {
@@ -593,15 +566,6 @@
           return "https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg";
         }
       }
-
-
-
-
-
-
-
-
-
 
       // ==== console log to html element ====
       rewireLoggingToElement(
@@ -663,18 +627,7 @@
         }
       }
 
-
-
-
-
-
-
-      // ==== Utility functions ====
-
-
-      function initializePage() {
-        // TODO initialize page
-      }
+      // ===== UTILITY FUNCTIONS =====
 
       function getIndicesOf(searchStr, str, caseSensitive) {
         var searchStrLen = searchStr.length;
@@ -727,7 +680,7 @@
       }
 
       function takenPieces() {
-        // TODO determine taken pieces
+        //                                                                                         TODO determine taken pieces
 
         var currentPosition = game.fen();
 
@@ -784,14 +737,23 @@
         }
       }
 
-
       // error handling
       function displayError(error) {
-        if ((error = 201)) {
-          console.log(" ");
+        switch (error) {
+          case "201":
+            //                                                                                     TODO fill out error handling
+            break;
+          case "333":
+            console.log(
+              "Developer: David Ryan \n“Chess is the struggle against the error.” – Johannes Zukertort \n04/01/2021 12:56am"
+            );
+            break;
         }
       }
 
+      // PAGE INITIALIZATION
+      initializePage();
     </script>
   </body>
 </html>
+<!--eof-->
