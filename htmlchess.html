@@ -133,6 +133,9 @@
       #myBoard {
         width: 500px;
         margin: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 
       #log-container {
@@ -160,14 +163,47 @@
       .log-error {
         font-weight: bold;
       }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 15px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border: 3px solid #ccc;
+        -webkit-transition: 0.5s;
+        transition: 0.5s;
+        outline: none;
+      }
+
+      input[type="text"]:focus {
+        border: 3px solid #555;
+      }
+      .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      code {
+        font-family: Consolas, "courier new";
+        color: crimson;
+        background-color: #f1f1f1;
+        /* padding: 2px; */
+        font-size: 105%;
+      }
     </style>
   </head>
 
   <body>
-    <h1>htmlchess</h1>
-
     <div class="row">
       <div class="column">
+        <div class="logo">
+          <img
+            src="https://lh3.googleusercontent.com/t8hpBsP31-D8Nbz8xb5rj0eEwZv8dWNaQT0DSSlfOWGGmbY7HD-4HUWtNb-puQ4LL8JFA8JxM1HbFFZAcjd9g08VZCMpHjbl_X8kwiEcKTYMscMpRF2fjgjCEV-OAd0785Ze2_Q342g=w2400"
+            alt="htmlchess logo"
+            style="width: 250px"
+          />
+        </div>
         <button class="button" id="setBtn">Set Board</button>
         <button class="button" id="clearBtn">Clear Board</button>
         <button class="button" id="startBtn">Start Game</button>
@@ -182,12 +218,7 @@
         <br />
         <br />
         <br />
-        <input
-          type="text"
-          id="fenInput"
-          size="70"
-          placeholder="FEN string input"
-        />
+        <input type="text" id="fenInput" placeholder="FEN string input" />
         <br />
         <br />
         <button class="button" id="enterFENbtn">Enter</button>
@@ -199,9 +230,39 @@
         <p id="output3"></p>
       </div>
       <div class="column">
+        <br>
+        <br>
         <div id="myBoard"></div>
       </div>
-      <div class="column"></div>
+      <div class="column" id="infoColumn">
+        <div id="info">
+          <h3>Welcome to HTMLCHESS!</h3>
+          <p>
+            An entirely self contained html file that uses the Stockfish engine
+            to play chess; developed by
+            <a href="http://davidryan.info">David Ryan</a>
+          </p>
+          <p>
+            The full source code can be found on the
+            <a href="https://github.com/dj-ryan/htmlchess">HTMLCHESS</a>
+            repository
+          </p>
+          <h3>FEN notation:</h3>
+          <p>
+            Help with FEN notation can be found <a href="https://www.chess.com/terms/fen-chess">here</a>
+            <br>
+            <code>
+              &lt;FEN> ::= &lt;Piece Placement&gt; <br />
+              ' ' &lt;Side to move&gt; <br />
+              ' ' &lt;Castling ability&gt;<br />
+              ' ' &lt;En passant target square&gt;<br />
+              ' ' &lt;Halfmove clock&gt;<br />
+              ' ' &lt;Fullmove counter&gt;<br />
+            </code>
+          </p>
+          <button class="button" id="clearInfoBtn">clear</button>
+        </div>
+      </div>
     </div>
 
     <div id="log-container">
@@ -272,6 +333,8 @@
       $("#goFowardBtn").on("click", stepFoward);
 
       $("#enterFENbtn").on("click", enterFEN);
+
+      $("#clearInfoBtn").on("click", clearInfo);
 
       // page initialization
       // function called at end of script
@@ -363,14 +426,24 @@
 
       function enterFEN() {
         var fen = document.getElementById("fenInput").value;
-        var validCheck = game.validate_fen(fen)
+        var validCheck = game.validate_fen(fen);
+        console.log("FEN validity check: ");
         console.log(validCheck);
-        console.log(validCheck.valid)
-        if(validCheck.valid == true) {
-          game.load(fen)
+        if (validCheck.valid == true) {
+          game.load(fen);
           board.position(fen);
-          console.log("Game loaded from FEN to: " + fen)
+          console.log("Game loaded from FEN to: " + fen);
         }
+      }
+
+      function clearInfo() {
+        // hide info pane
+        //$("#info").hide();
+
+        // hide info column
+        $("#infoColumn").remove();
+        $(".column").css("width", "50%");
+        $("#myBoard").css("width", "600px");
       }
 
       // ==== STOCKFISH HANDLING =====
