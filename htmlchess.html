@@ -43,6 +43,7 @@
       .button {
         display: inline-block;
         padding: 10px 20px;
+        margin-bottom: 10px;
         font-size: 15px;
         cursor: pointer;
         text-align: center;
@@ -131,7 +132,7 @@
       }
 
       #myBoard {
-        width: 500px;
+        width: 100%;
         margin: auto;
         display: flex;
         justify-content: center;
@@ -165,7 +166,7 @@
       }
 
       input[type="text"] {
-        width: 100%;
+        width: 90%;
         padding: 12px 20px;
         font-size: 15px;
         margin: 8px 0;
@@ -190,6 +191,10 @@
         background-color: #f1f1f1;
         /* padding: 2px; */
         font-size: 105%;
+      }
+
+      .infoBox {
+        margin: 10px;
       }
     </style>
   </head>
@@ -221,8 +226,8 @@
         <br />
         <br />
         <button class="button" id="enterFENbtn">Enter</button>
-        <br>
-        <br>
+        <br />
+        <br />
         <button class="button" id="showInfoBtn">show info</button>
 
         <p id="gameEnd"></p>
@@ -232,12 +237,12 @@
         <p id="output3"></p>
       </div>
       <div class="column">
-        <br>
-        <br>
+        <br />
+        <br />
         <div id="myBoard"></div>
       </div>
       <div class="column" id="infoColumn">
-        <div id="info">
+        <div class="infoBox" id="info">
           <h3>Welcome to HTMLCHESS!</h3>
           <p>
             An entirely self contained html file that uses the Stockfish engine
@@ -250,19 +255,40 @@
             repository
           </p>
           <h3>Usage:</h3>
-          <p>To initialize the board into the starting position press <button class="button" style="zoom: 0.5">Set Board</button></p>
-          <p>The Stockfish engin will not initialize until the <button class="button" style="zoom: 0.5">Start Game</button> button is pressed. It will evaluate the position that it is currently in wheather that is from the <button class="button" style="zoom: 0.5">Set Board</button> or the FEN string input</p>
+          <p>
+            To initialize the board into the starting position press
+            <button class="button" style="zoom: 0.5">Set Board</button>
+          </p>
+          <p>
+            The Stockfish engin will not initialize until the
+            <button class="button" style="zoom: 0.5">Start Game</button> button
+            is pressed. It will evaluate the position that it is currently in
+            wheather that is from the
+            <button class="button" style="zoom: 0.5">Set Board</button> or the
+            FEN string input or by dragging and droping peices into the desired
+            position
+          </p>
+          <p>
+            If you want to play as Black press
+            <button class="button" id="flipOrientationBtn" style="zoom: 0.5">
+              Flip orientation</button
+            >. Sides can not be switched mid game (yet...) but can be switched
+            up until the game is started.
+          </p>
           <h3>FEN notation:</h3>
           <p>
-            Help with FEN notation can be found <a href="https://www.chess.com/terms/fen-chess">here</a>
-            An example of a valid FEN notation is given below:
-            <br>
+            Help with FEN notation can be found
+            <a href="https://www.chess.com/terms/fen-chess">here</a>. An example
+            of a valid FEN notation is given below:
+            <br />
             <code>
               r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 1
             </code>
           </p>
           <h3>Console log</h3>
-          To understand how the Javascript works there is direct output of <code>console.log()</code> to the webpage. 
+          To understand how the Javascript works there is direct output of
+          <code>console.log()</code> to the webpage.
+          <br />
           <button class="button" id="clearInfoBtn">clear</button>
         </div>
       </div>
@@ -338,7 +364,7 @@
       $("#enterFENBtn").on("click", enterFEN);
 
       $("#clearInfoBtn").on("click", clearInfo);
-      $("#showInfoBtn").on("click", showInfo)
+      $("#showInfoBtn").on("click", showInfo);
 
       // page initialization
       // function called at end of script
@@ -446,22 +472,20 @@
       function clearInfo() {
         // hide info pane
         $("#showInfoBtn").show();
-        $("#info").hide(100);
+        $("#info").hide();
 
         // hide info column
         //$("#infoColumn").remove();
-        $(".column").animate({"width": "50%"}, 100);
+        $(".column").animate({ width: "50%" }, 100);
         // $("#myBoard").css("width", "600px");
       }
 
       function showInfo() {
-
-        $(".column").animate({"width": "33%"}, 100);
+        $(".column").animate({ width: "33%" }, 100);
         // $("#myBoard").css("width", "400px");
 
-        $("#info").show(100);
+        $("#info").show();
         $("#showInfoBtn").hide();
-
       }
 
       // ==== STOCKFISH HANDLING =====
