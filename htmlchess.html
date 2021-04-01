@@ -2,10 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="htmlchess"
-      content="An html file that can beat you at chess"
-    />
+    <meta name="htmlchess" content="An html file that can beat you at chess" />
     <meta name="keywords" content="Chess, HTML, JavaScript, Stockfish" />
     <meta name="author" content="David Ryan" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -266,15 +263,15 @@
       $("#goFowardBtn").on("click", stepFoward);
 
       // page initialization
+      // function called at end of script
       function initializePage() {
-        // function called at end of script
         console.log("Initializing page...");
         // chess board initialization in global variable
         board = Chessboard("myBoard", configFree);
         // stockfish initialization in global variable
         console.log("Loading Stockfish...");
         stockfish = STOCKFISH();
-        console.log("Stockfish successfully loaded.");
+        console.log("Stockfish loaded successfully.");
 
         // web worker implementation
         //var stockfish = new Worker("stockfish.js");
@@ -297,13 +294,14 @@
         removeHighlights("black");
         board.destroy();
         board = Chessboard("myBoard", configFree);
-
         game = null;
+        console.log("Clear Board")
       }
 
       function setBoard() {
-        clearBoard();
+        //clearBoard();
         board.start();
+        console.log("Set Board")
       }
 
       function startGame() {
@@ -316,6 +314,7 @@
         if (userColor == "black") {
           stockfishMove();
         }
+        console.log("Start Game\nMode: " + mode + "\nLevel: " + level)
       }
 
       function flipBoard() {
@@ -325,7 +324,7 @@
           userColor = "black";
         } else userColor = "white";
 
-        console.log(userColor);
+        console.log("Flip Board\nUser Color now: " + userColor)
       }
 
       function stepFoward() {
@@ -347,6 +346,8 @@
         // } else {
         //     // TODO send error message
         // }
+
+        console.log("Step Back")
       }
 
       // ==== STOCKFISH HANDLING =====
@@ -377,13 +378,13 @@
         //                                                                                         TODO parse stockfish reply message
 
         var msgType = event[0];
-        console.log("msgType: " + msgType);
+        //console.log("msgType: " + msgType);
 
         var info = {
           depth: null,
           cp: null,
           nodes: null,
-          time: null
+          time: null,
         };
 
         switch (msgType) {
@@ -397,8 +398,10 @@
             break;
         }
 
-        console.log("depth: " + info.depth);
-        
+        if (info.depth) {
+          console.log("depth: " + info.depth);
+        }
+
         //                                                                                         TODO parse string based of of keyword index
         // example stockfish event data
         // info depth 5 seldepth 6 multipv 1 score cp 40 nodes 1355 nps 7445 time 182 pv d7d5 d2d3 d5e4 d3e4 d8d1 e1d1 bmc 1.87422
@@ -411,10 +414,10 @@
           addHighlights(move);
           board.position(game.fen());
           checkGameEnd();
-          document.getElementById("output2").innerHTML = game.fen();
+          //document.getElementById("output2").innerHTML = game.fen();
           moveList.push(game.fen());
         } else {
-          document.getElementById("output1").innerHTML = event;
+          //document.getElementById("output1").innerHTML = event;
         }
       }
 
