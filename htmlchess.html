@@ -29,15 +29,12 @@
 
     <style>
       .column {
-        float: left;
-        width: 33.33%;
+        width: 100%;
       }
 
       /* Clear floats after the columns */
-      .row:after {
-        content: "";
-        display: table;
-        clear: both;
+      .row {
+        display: flex;
       }
 
       .button {
@@ -184,14 +181,13 @@
       .logo {
         display: flex;
         justify-content: center;
-        align-items: center;
       }
       code {
         font-family: Consolas, "courier new";
         color: crimson;
         background-color: #f1f1f1;
         /* padding: 2px; */
-        font-size: 105%;
+        font-size: 95%;
       }
 
       .infoBox {
@@ -357,7 +353,6 @@
       $("#flipOrientationBtn").on("click", flipBoard);
 
       $("#goBackBtn").on("click", stepBack);
-      $("#goFowardBtn").on("click", stepFoward);
 
       $("#enterFENBtn").on("click", enterFEN);
 
