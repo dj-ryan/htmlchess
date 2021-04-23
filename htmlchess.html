@@ -311,6 +311,8 @@
 
       var userColor = "white";
 
+      var infoClone = null;
+
       // chess board configs
       var configStart = {
         pieceTheme: pieceTheme,
@@ -467,15 +469,15 @@
         // hide info column
         //$("#infoColumn").remove();
         $(".column").animate({ width: "50%" }, 100);
-        // $("#myBoard").css("width", "600px");
-        await sleep(100);
+        $("#myBoard").css("width", "600px");
+        await sleep(500);
         board.resize();
       }
 
       async function showInfo() {
         $(".column").animate({ width: "33%" }, 100);
-        // $("#myBoard").css("width", "400px");
-        await sleep(100);
+        $("#myBoard").css("width", "400px");
+        await sleep(500);
         $("#info").show();
         $("#showInfoBtn").hide();
         board.resize();
